@@ -1,0 +1,25 @@
+# A larger (slower, pricier) mock candidate for the routing demo.
+name: support-routing
+task: classification
+description: Route a support ticket to billing / technical / account / shipping.
+dataset:
+  path: support-tickets.jsonl
+  id: support-routing-v3
+prompt:
+  system: "Classify the support ticket. Answer with one word: billing, technical, account or shipping."
+  template: "{input}"
+provider:
+  kind: mock
+  model: mock-large
+  accuracy: 0.97
+  infra_error_rate: 0.01
+  model_error_rate: 0.0
+  latency_ms: 3
+scorer:
+  kind: classification
+  labels: [billing, technical, account, shipping]
+run:
+  seed: 0
+  concurrency: 4
+  retries: 0
+pricing: prices.yaml

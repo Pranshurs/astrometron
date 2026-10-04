@@ -669,6 +669,112 @@ def i1(env: Env) -> Result:
     )
 
 
+def _policy(cands: list[dict[str, Any]], **req: Any) -> dict[str, Any]:
+    from .router import validate_policy
+
+    base = {"min_success_rate": 0.5, "quality_bound": "point", "min_cases": 10}
+    return validate_policy(
+        {"task": "integrity", "requirements": {**base, **req}, "candidates": cands}
+    )
+
+
+_PRICES = {
+    "source": "selfcheck",
+    "updated_at": "2026-01-01",
+    "models": {"mock/model-a": {"input_per_mtok": 1.0, "output_per_mtok": 1.0}},
+}
+
+
+@scenario("R1", "stale routing evidence")
+def r1(env: Env) -> Result:
+    from datetime import datetime, timedelta, timezone
+
+    from .router import route
+
+    env.run()
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 0.8}]
+    honest = route(env.store, _policy(cand, max_evidence_age_days=30))["status"] == "SELECTED"
+    later = datetime.now(timezone.utc) + timedelta(days=60)
+    d = route(env.store, _policy(cand, max_evidence_age_days=30), now=later)
+    drift = route(env.store, _policy([{**cand[0], "accuracy": 0.95}]))
+    detected = d["status"] == "ROUTING_EVIDENCE_STALE" and drift["status"] == (
+        "ROUTING_EVIDENCE_STALE"
+    )
+    return Result(
+        "R1",
+        "",
+        "ROUTING_EVIDENCE_STALE (age, revision drift)",
+        honest,
+        detected,
+        f"age: {d['status']}; drift: {drift['status']}",
+    )
+
+
+@scenario("R2", "no model meets the constraints")
+def r2(env: Env) -> Result:
+    from .router import route
+
+    env.run()
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 0.8}]
+    honest = route(env.store, _policy(cand))["status"] == "SELECTED"
+    d = route(env.store, _policy(cand, min_success_rate=0.99))
+    return Result(
+        "R2",
+        "",
+        "NO_ELIGIBLE_MODEL",
+        honest,
+        d["status"] == "NO_ELIGIBLE_MODEL" and d["selected"] is None,
+        f"{d['status']}: {d['candidates'][0]['reasons'][:1]}",
+    )
+
+
+@scenario("R3", "forged better-looking evidence offered to the router")
+def r3(env: Env) -> Result:
+    from .router import route
+
+    r = env.run()
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 0.8}]
+    honest = route(env.store, _policy(cand))["selected"] == "mock/model-a"
+    forged = copy.deepcopy(r)
+    for c in forged["cases"]:
+        c["outcome"] = "PASS"
+        c["score"] = {"passed": True, "value": 1.0}
+        c["error"] = None
+    forged["aggregate"] = aggregate(forged["cases"], forged["dataset"]["selected_case_ids"], [])
+    env.overwrite(seal(forged))
+    d = route(env.store, _policy(cand, min_success_rate=0.95))
+    detected = d["status"] == "NO_ELIGIBLE_MODEL" and any(
+        s["run_id"] == r["run_id"] for s in d["skipped_invalid_evidence"]
+    )
+    return Result(
+        "R3",
+        "",
+        "forged receipt skipped as invalid evidence",
+        honest,
+        detected,
+        str(d["skipped_invalid_evidence"][:1]),
+    )
+
+
+@scenario("R4", "cost limit with missing cost metadata")
+def r4(env: Env) -> Result:
+    from .router import route
+
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 0.8}]
+    env.run(pricing=_PRICES)
+    honest = route(env.store, _policy(cand, max_cost_per_case_usd=0.01))["status"] == "SELECTED"
+    env.run()  # newer evidence without any price table
+    d = route(env.store, _policy(cand, max_cost_per_case_usd=0.01))
+    return Result(
+        "R4",
+        "",
+        "COST_UNKNOWN fails closed",
+        honest,
+        d["candidates"][0]["status"] == "COST_UNKNOWN",
+        d["candidates"][0]["status"],
+    )
+
+
 def run_suite(only: list[str] | None = None) -> list[dict[str, Any]]:
     out = []
     for sid, title, fn in SCENARIOS:

@@ -11,5 +11,5 @@ def test_scenario(sid: str) -> None:
 
 
 def test_suite_size() -> None:
-    assert len(SCENARIOS) >= 28
+    assert len(SCENARIOS) >= 32
     assert len({s[0] for s in SCENARIOS}) == len(SCENARIOS)

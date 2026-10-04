@@ -216,3 +216,24 @@ def test_object_corruption_detected(store: Store) -> None:
     path.write_text('{"a":2}')
     with pytest.raises(StoreError, match="corrupted"):
         store.get_object(d)
+
+
+def test_v1_store_migrates_to_v2_preserving_runs(tmp_path: Path, data_file: Path) -> None:
+    from evalledger.store import _migrate_0_to_1
+
+    root = tmp_path / ".evalledger"
+    root.mkdir()
+    con = sqlite3.connect(root / "index.sqlite")
+    _migrate_0_to_1(con)
+    con.execute("INSERT INTO meta VALUES('schema_version','1')")
+    con.execute(
+        "INSERT INTO runs(run_id,status,started_at,dataset_id,dataset_revision,provider,"
+        "model,pinned) VALUES('01OLD','COMPLETE','2026-01-01','ds','r','mock','m',1)"
+    )
+    con.commit()
+    con.close()
+    st = Store(root)
+    assert st.run_row("01OLD")["model"] == "m"
+    con = sqlite3.connect(root / "index.sqlite")
+    assert con.execute("SELECT value FROM meta").fetchone()[0] == str(SCHEMA_VERSION) == "2"
+    assert con.execute("SELECT count(*) FROM routing_decisions").fetchone()[0] == 0

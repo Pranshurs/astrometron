@@ -33,7 +33,7 @@ from .canonical import canonical_bytes, digest, digest_bytes, is_digest
 from .dataset import Dataset, DatasetError
 from .receipt import STATUS_COMPLETE, Verification, verify_receipt
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DEFAULT_ROOT = ".evalledger"
 
 
@@ -100,8 +100,25 @@ def _migrate_0_to_1(con: sqlite3.Connection) -> None:
     )
 
 
+def _migrate_1_to_2(con: sqlite3.Connection) -> None:
+    """v2: routing decisions are recorded, and runs are indexed by candidate."""
+    con.executescript(
+        """
+        CREATE TABLE routing_decisions (
+            decision_id TEXT PRIMARY KEY,
+            created_at TEXT NOT NULL,
+            task TEXT,
+            status TEXT NOT NULL,
+            selected TEXT,
+            decision_digest TEXT NOT NULL
+        );
+        CREATE INDEX runs_by_candidate ON runs (task, provider, model, status);
+        """
+    )
+
+
 #: version N -> function migrating N to N+1
-MIGRATIONS = {0: _migrate_0_to_1}
+MIGRATIONS = {0: _migrate_0_to_1, 1: _migrate_1_to_2}
 
 
 def schema_version(con: sqlite3.Connection) -> int:
@@ -412,6 +429,23 @@ class Store:
         }:
             return "selection binding: recorded selection differs from the recorded config"
         return None
+
+    def record_decision(self, decision: Mapping[str, Any]) -> str:
+        obj = self.put_object(decision)
+        with self._db() as con:
+            con.execute(
+                "INSERT INTO routing_decisions(decision_id, created_at, task, status, selected, "
+                "decision_digest) VALUES(?,?,?,?,?,?)",
+                (
+                    decision["decision_id"],
+                    decision["created_at"],
+                    decision.get("task"),
+                    decision["status"],
+                    decision.get("selected"),
+                    obj,
+                ),
+            )
+        return obj
 
     def is_trustworthy(self, run_id: str) -> bool:
         row = self.run_row(run_id)
