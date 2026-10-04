@@ -1,0 +1,8 @@
+# Illustrative prices for the offline demo models. NOT real vendor prices.
+source: "examples/support-routing/prices.yaml (illustrative, not a vendor price list)"
+updated_at: "2026-10-04"
+currency: USD
+models:
+  mock/mock-v1: {input_per_mtok: 0.50, output_per_mtok: 1.50}
+  mock/mock-large: {input_per_mtok: 3.00, output_per_mtok: 15.00}
+  python/keyword-router-v1: {input_per_mtok: 0.0, output_per_mtok: 0.0}

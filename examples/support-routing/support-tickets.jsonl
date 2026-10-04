@@ -1,0 +1,200 @@
+{"expected": "billing", "id": "tkt-0000", "input": "My card was declined when paying for the team plan.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0001", "input": "I was charged twice for the starter kit this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0002", "input": "Please send me a VAT invoice for my workspace.", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0003", "input": "The tracking number for the team plan doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0004", "input": "I can't upload files to my workspace, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0005", "input": "I can't log in to the dashboard, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0006", "input": "Please delete my the Pro plan account and all data.", "split": "test", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0007", "input": "My order of the desk lamp hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0008", "input": "Can I get a refund for order #4471? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0009", "input": "the starter kit shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0010", "input": "Please delete my my workspace account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0011", "input": "I can't upload files to my subscription, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0012", "input": "I was charged twice for my subscription this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0013", "input": "the desk lamp shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0014", "input": "Sync for the mobile app has been stuck for two days.", "split": "test", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0015", "input": "I was charged twice for order #4471 this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0016", "input": "The API returns a timeout when I call the starter kit.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0017", "input": "I can't log in to the mobile app, password reset email never arrives.", "split": "test", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0018", "input": "My card was declined when paying for the headset.", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0019", "input": "I received the wrong my subscription in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0020", "input": "How do I change the email address on the starter kit?", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0021", "input": "My card was declined when paying for the mobile app.", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0022", "input": "Please delete my the team plan account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0023", "input": "I was charged twice for my workspace this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0024", "input": "Why did the price of order #4471 go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0025", "input": "my subscription shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0026", "input": "Why did the price of the dashboard go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0027", "input": "How do I change the email address on the mobile app?", "split": "test", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0028", "input": "I received the wrong the team plan in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0029", "input": "My order of the team plan hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0030", "input": "How do I change the email address on order #4471?", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0031", "input": "Can I change the delivery address for my workspace?", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0032", "input": "Two-factor codes for the Pro plan are not working.", "split": "test", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0033", "input": "Can I change the delivery address for the Pro plan?", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0034", "input": "Can I change the delivery address for the desk lamp?", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0035", "input": "Two-factor codes for the dashboard are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0036", "input": "the headset arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0037", "input": "I received the wrong the starter kit in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0038", "input": "Sync for the dashboard has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0039", "input": "Please send me a VAT invoice for the desk lamp.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0040", "input": "Why did the price of the desk lamp go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0041", "input": "the team plan arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0042", "input": "I was charged twice for the Pro plan this month.", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0043", "input": "Two-factor codes for the headset are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0044", "input": "Please send me a VAT invoice for the dashboard.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0045", "input": "the headset shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0046", "input": "I can't upload files to order #4471, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0047", "input": "My order of my workspace hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0048", "input": "How do I change the email address on the dashboard?", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0049", "input": "How do I change the email address on the Pro plan?", "split": "test", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0050", "input": "Please delete my order #4471 account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0051", "input": "The tracking number for the headset doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0052", "input": "I can't log in to order #4471, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0053", "input": "Can I change the delivery address for the mobile app?", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0054", "input": "My order of the dashboard hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0055", "input": "Sync for the headset has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0056", "input": "Can I change the delivery address for the dashboard?", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0057", "input": "the team plan shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0058", "input": "The app crashes whenever I open the mobile app.", "split": "test", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0059", "input": "The API returns a timeout when I call the team plan.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0060", "input": "The tracking number for order #4471 doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0061", "input": "The API returns a timeout when I call the Pro plan.", "split": "test", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0062", "input": "The tracking number for the mobile app doesn't work.", "split": "test", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0063", "input": "Why did the price of the mobile app go up on my last bill?", "split": "test", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0064", "input": "The app crashes whenever I open my workspace.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0065", "input": "The API returns a timeout when I call my workspace.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0066", "input": "My order of the mobile app hasn't arrived after ten days.", "split": "test", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0067", "input": "Can I get a refund for the Pro plan? The invoice looks wrong.", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0068", "input": "I can't log in to the Pro plan, password reset email never arrives.", "split": "test", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0069", "input": "Sync for the Pro plan has been stuck for two days.", "split": "test", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0070", "input": "The app crashes whenever I open the Pro plan.", "split": "test", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0071", "input": "the mobile app arrived damaged, the box was crushed.", "split": "test", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0072", "input": "I want to add a teammate to the mobile app.", "split": "test", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0073", "input": "I can't upload files to the starter kit, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0074", "input": "My card was declined when paying for the desk lamp.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0075", "input": "Two-factor codes for the mobile app are not working.", "split": "test", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0076", "input": "The API returns a timeout when I call the headset.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0077", "input": "Can I change the delivery address for the headset?", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0078", "input": "How do I change the email address on the team plan?", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0079", "input": "Please send me a VAT invoice for the mobile app.", "split": "test", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0080", "input": "The app crashes whenever I open the headset.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0081", "input": "I was charged twice for the dashboard this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0082", "input": "I can't log in to my subscription, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0083", "input": "Please send me a VAT invoice for the headset.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0084", "input": "Please delete my the starter kit account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0085", "input": "Please delete my the mobile app account and all data.", "split": "test", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0086", "input": "the dashboard arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0087", "input": "I received the wrong the headset in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0088", "input": "Why did the price of the headset go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0089", "input": "I was charged twice for the desk lamp this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0090", "input": "How do I change the email address on the desk lamp?", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0091", "input": "Can I change the delivery address for the starter kit?", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0092", "input": "I can't upload files to the headset, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0093", "input": "the Pro plan shows error 500 after the latest update.", "split": "test", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0094", "input": "The tracking number for the dashboard doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0095", "input": "The tracking number for the starter kit doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0096", "input": "I was charged twice for the team plan this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0097", "input": "The app crashes whenever I open the team plan.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0098", "input": "order #4471 arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0099", "input": "Two-factor codes for order #4471 are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0100", "input": "Can I change the delivery address for the team plan?", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0101", "input": "Please send me a VAT invoice for the starter kit.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0102", "input": "I can't upload files to the team plan, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0103", "input": "My order of the Pro plan hasn't arrived after ten days.", "split": "test", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0104", "input": "Please send me a VAT invoice for the Pro plan.", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0105", "input": "I can't log in to the starter kit, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0106", "input": "The tracking number for the desk lamp doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0107", "input": "Sync for order #4471 has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0108", "input": "Sync for my workspace has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0109", "input": "The API returns a timeout when I call the desk lamp.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0110", "input": "Please delete my the dashboard account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0111", "input": "I can't upload files to the mobile app, it just spins.", "split": "test", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0112", "input": "I was charged twice for the mobile app this month.", "split": "test", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0113", "input": "I received the wrong order #4471 in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0114", "input": "Two-factor codes for my workspace are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0115", "input": "Can I get a refund for the headset? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0116", "input": "Please send me a VAT invoice for order #4471.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0117", "input": "The API returns a timeout when I call my subscription.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0118", "input": "My card was declined when paying for my workspace.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0119", "input": "The app crashes whenever I open order #4471.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0120", "input": "the mobile app shows error 500 after the latest update.", "split": "test", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0121", "input": "My order of the starter kit hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0122", "input": "Can I change the delivery address for my subscription?", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0123", "input": "Sync for the desk lamp has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0124", "input": "My order of the headset hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0125", "input": "the starter kit arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0126", "input": "I received the wrong my workspace in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0127", "input": "I can't upload files to the desk lamp, it just spins.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0128", "input": "Please delete my my subscription account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0129", "input": "Two-factor codes for the starter kit are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0130", "input": "My card was declined when paying for the Pro plan.", "split": "test", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0131", "input": "the dashboard shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0132", "input": "My order of order #4471 hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0133", "input": "order #4471 shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0134", "input": "Sync for my subscription has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "technical", "id": "tkt-0135", "input": "The API returns a timeout when I call the dashboard.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0136", "input": "How do I change the email address on my subscription?", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0137", "input": "How do I change the email address on the headset?", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0138", "input": "I can't upload files to the Pro plan, it just spins.", "split": "test", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0139", "input": "I can't log in to the headset, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0140", "input": "Two-factor codes for my subscription are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0141", "input": "Please delete my the desk lamp account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0142", "input": "The app crashes whenever I open the dashboard.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0143", "input": "the Pro plan arrived damaged, the box was crushed.", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0144", "input": "my subscription arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "billing", "id": "tkt-0145", "input": "Can I get a refund for my subscription? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0146", "input": "I want to add a teammate to the Pro plan.", "split": "test", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0147", "input": "I received the wrong the dashboard in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0148", "input": "The API returns a timeout when I call the mobile app.", "split": "test", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0149", "input": "Please send me a VAT invoice for the team plan.", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0150", "input": "My order of my subscription hasn't arrived after ten days.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0151", "input": "I want to add a teammate to the team plan.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0152", "input": "My card was declined when paying for my subscription.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0153", "input": "Please send me a VAT invoice for my subscription.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0154", "input": "I want to add a teammate to order #4471.", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0155", "input": "Sync for the team plan has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0156", "input": "I want to add a teammate to my subscription.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0157", "input": "Why did the price of the Pro plan go up on my last bill?", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0158", "input": "Two-factor codes for the team plan are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0159", "input": "Why did the price of my subscription go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0160", "input": "Can I change the delivery address for order #4471?", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0161", "input": "Sync for the starter kit has been stuck for two days.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0162", "input": "Why did the price of the starter kit go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0163", "input": "I want to add a teammate to the dashboard.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0164", "input": "Can I get a refund for my workspace? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0165", "input": "The app crashes whenever I open my subscription.", "split": "dev", "tags": ["technical"]}
+{"expected": "shipping", "id": "tkt-0166", "input": "I received the wrong the mobile app in my parcel.", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0167", "input": "I received the wrong the desk lamp in my parcel.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0168", "input": "my workspace arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0169", "input": "I want to add a teammate to the desk lamp.", "split": "dev", "tags": ["account"]}
+{"expected": "shipping", "id": "tkt-0170", "input": "the desk lamp arrived damaged, the box was crushed.", "split": "dev", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0171", "input": "I received the wrong the Pro plan in my parcel.", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0172", "input": "The tracking number for the Pro plan doesn't work.", "split": "test", "tags": ["shipping"]}
+{"expected": "shipping", "id": "tkt-0173", "input": "The tracking number for my workspace doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "technical", "id": "tkt-0174", "input": "The app crashes whenever I open the desk lamp.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0175", "input": "Why did the price of my workspace go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0176", "input": "I want to add a teammate to the starter kit.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0177", "input": "Can I get a refund for the mobile app? The invoice looks wrong.", "split": "test", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0178", "input": "I can't log in to the team plan, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0179", "input": "I want to add a teammate to my workspace.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0180", "input": "My card was declined when paying for order #4471.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0181", "input": "my workspace shows error 500 after the latest update.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0182", "input": "Can I get a refund for the desk lamp? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0183", "input": "I can't log in to the desk lamp, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "account", "id": "tkt-0184", "input": "How do I change the email address on my workspace?", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0185", "input": "My card was declined when paying for the dashboard.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0186", "input": "I was charged twice for the headset this month.", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0187", "input": "The app crashes whenever I open the starter kit.", "split": "dev", "tags": ["technical"]}
+{"expected": "account", "id": "tkt-0188", "input": "Please delete my the headset account and all data.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0189", "input": "Can I get a refund for the starter kit? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0190", "input": "I want to add a teammate to the headset.", "split": "dev", "tags": ["account"]}
+{"expected": "technical", "id": "tkt-0191", "input": "The API returns a timeout when I call order #4471.", "split": "dev", "tags": ["technical"]}
+{"expected": "billing", "id": "tkt-0192", "input": "My card was declined when paying for the starter kit.", "split": "dev", "tags": ["billing"]}
+{"expected": "account", "id": "tkt-0193", "input": "Two-factor codes for the desk lamp are not working.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0194", "input": "Can I get a refund for the team plan? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "billing", "id": "tkt-0195", "input": "Can I get a refund for the dashboard? The invoice looks wrong.", "split": "dev", "tags": ["billing"]}
+{"expected": "shipping", "id": "tkt-0196", "input": "The tracking number for my subscription doesn't work.", "split": "dev", "tags": ["shipping"]}
+{"expected": "account", "id": "tkt-0197", "input": "I can't log in to my workspace, password reset email never arrives.", "split": "dev", "tags": ["account"]}
+{"expected": "billing", "id": "tkt-0198", "input": "Why did the price of the team plan go up on my last bill?", "split": "dev", "tags": ["billing"]}
+{"expected": "technical", "id": "tkt-0199", "input": "I can't upload files to the dashboard, it just spins.", "split": "dev", "tags": ["technical"]}

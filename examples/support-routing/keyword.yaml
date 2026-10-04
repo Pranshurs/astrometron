@@ -1,0 +1,21 @@
+# A real local classifier (no API account): keyword routing.
+name: support-routing
+task: classification
+dataset:
+  path: support-tickets.jsonl
+  id: support-routing-v3
+python_path: ["."]
+prompt:
+  system: "Classify the support ticket. Answer with one word: billing, technical, account or shipping."
+  template: "{input}"
+provider:
+  kind: python
+  function: support_models:keyword_router
+  model: keyword-router-v1
+scorer:
+  kind: classification
+  labels: [billing, technical, account, shipping]
+run:
+  seed: 0
+  concurrency: 4
+pricing: prices.yaml
