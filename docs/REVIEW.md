@@ -39,12 +39,31 @@ scripts, before any repair.
 | L5 | LOW (reasoned) | Run-id prefix lookup used an unescaped `LIKE`. | **Fixed.** Literal prefix comparison. | test |
 | – | Note | STRONGLY_COMPARABLE ignores prompt/params/solver differences. | **By design**: these are treatments. They are listed in `changed_treatments` and warned about when more than one changed. | – |
 
+**Bounded re-check by the same reviewer (HEAD `b36b10e`).** The reviewer re-ran its
+original reproductions plus a new script (`r8.py`, which the maintainer re-ran
+independently with matching output).
+
+- Every original HIGH and MEDIUM finding is RESOLVED.
+- No CLAIM-INVALIDATING counterexample was found.
+- Items marked UNVERIFIED in the re-check (8b, L3–L5) are covered by the maintainer's
+  tests and mutants M60 and M64.
+
+Two NEW-OBSERVATIONS, handled as a separate change:
+
+- The router ignored tool-`degraded` cases. Evidence now reports
+  `scored_after_tool_failure`, and the optional `max_degraded_fraction` gate rejects it
+  above a limit (`DEGRADED_EVIDENCE`; test, mutant M67).
+- The router's reliability gate did not count evaluation-side errors, so evidence that
+  was all HARNESS_ERROR relied on the quality floor. New `BROKEN_EVALUATION` gate:
+  (HARNESS + JUDGE + INVALID_CASE) / requested must be ≤ `max_evaluation_error_rate`,
+  default 0, so it fails closed (scenario R7, mutant M66).
+
 **Re-verification after repair.**
 
 - The reviewer's scripts were re-run against the repaired code, and every finding now
   behaves as fixed.
-- Test suite: 145 tests pass.
-- `selfcheck`: 40/40 scenarios.
-- Mutation gate: 64 mutants, 63 killed, 0 survived, 0 invalid, 1 equivalent (justified).
+- Test suite: 147 tests pass on Python 3.10, 3.12 and 3.13.
+- `selfcheck`: 41/41 scenarios.
+- Mutation gate: 66 mutants, 65 killed, 0 survived, 0 invalid, 1 equivalent (justified).
 - Benchmark: re-run because the hot path changed. Throughput fell from about 6,300 to
   about 5,600 cases/s (zero-latency provider); see PERFORMANCE.md.

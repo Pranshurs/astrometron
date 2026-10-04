@@ -11,7 +11,7 @@ the CLI end to end.
 
 ## 2. Adversarial integrity suite (`evalledger selfcheck`)
 
-40 scenarios in `src/evalledger/integrity.py`, run as part of `pytest`. Each scenario
+41 scenarios in `src/evalledger/integrity.py`, run as part of `pytest`. Each scenario
 has two arms:
 
 - **an honest control arm** that must verify cleanly, so a verifier that rejects
@@ -27,12 +27,12 @@ has two arms:
 | Taxonomy | E1 harness crash · E2 crash relabelled · F1 outage · F2 outage swallowed by harness · F3/F4 outage relabelled TASK_FAILURE / PASS · G1 tool crash · J1 judge failures · J2 judge failure relabelled |
 | Staleness | H1 config edited · H2 dataset edited · H3 crashed run as evidence |
 | Reproduction | I1 deterministic repeat (control: a different seed must *not* match) |
-| Routing | R1 stale evidence (age, revision drift) · R2 no eligible model · R3 forged evidence · R4 unknown cost under a limit · R5 cherry-picked exclusions · R6 another deployment's evidence |
+| Routing | R1 stale evidence (age, revision drift) · R2 no eligible model · R3 forged evidence · R4 unknown cost under a limit · R5 cherry-picked exclusions · R6 another deployment's evidence · R7 evidence from a broken evaluation |
 | Added after review | A7 index-only tamper · C4 compare offered a resealed forgery · C5 interrupted run compared · E3 non-finite provider value · G2 swallowed tool failure · I2 all-outage rerun |
 
 ## 3. Mutation gate (`python tools/mutation_gate.py`)
 
-64 hand-written mutants, each breaking one critical invariant: omitting failed cases
+66 hand-written mutants, each breaking one critical invariant: omitting failed cases
 from the denominator, accepting a wrong dataset digest, ignoring scorer changes,
 accepting stale receipts, turning harness or judge errors into task failures, treating a
 provider failure as PASS, unbinding selected case ids, dropping tool-version provenance,
@@ -46,7 +46,7 @@ The gate:
 - fails on SURVIVED or INVALID (FIND text not present exactly once);
 - re-runs the baseline after restoring.
 
-Current result: **64 mutants, 63 killed, 0 survived, 0 invalid, 1 equivalent.**
+Current result: **66 mutants, 65 killed, 0 survived, 0 invalid, 1 equivalent.**
 
 The equivalent mutant is M04, which removes the summary `accounted != requested` check.
 It is verdict-equivalent because accounted ≠ requested implies a missing, extra,

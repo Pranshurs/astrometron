@@ -58,6 +58,8 @@ REQ_KEYS = {
     "max_error_rate",
     "require_pinned",
     "max_excluded_fraction",
+    "max_evaluation_error_rate",
+    "max_degraded_fraction",
 }
 #: Evidence is never authoritative forever: applied when the policy does not set an age.
 #: Set ``max_evidence_age_days: null`` explicitly to disable.
@@ -133,6 +135,13 @@ def _evidence_summary(r: Mapping[str, Any], age: float) -> dict[str, Any]:
         "success_rate": agg["pass_rate"]["value"],
         "success_ci95": agg["pass_rate"]["ci95_wilson"],
         "error_rate": round(errors / agg["attempted"], 6) if agg["attempted"] else None,
+        # Evaluation-side failures: the measurement itself was broken for these cases.
+        "evaluation_error_rate": round(
+            (c["HARNESS_ERROR"] + c["JUDGE_ERROR"] + c["INVALID_CASE"]) / agg["requested"], 6
+        )
+        if agg["requested"]
+        else None,
+        "scored_after_tool_failure": agg.get("scored_after_tool_failure", 0),
         "p95_ms": agg["latency_ms"]["model"]["p95"],
         "cost_per_case_usd": agg["cost"]["per_case_usd"] if agg["cost"]["complete"] else None,
         "revision": r["provider"]["identity"].get("revision"),
@@ -291,6 +300,26 @@ def route(
         max_err = req.get("max_error_rate")
         if max_err is not None and (ev["error_rate"] is None or ev["error_rate"] > float(max_err)):
             failures.append(("UNRELIABLE", f"error rate {ev['error_rate']} > {max_err}"))
+        max_eval_err = float(req.get("max_evaluation_error_rate", 0.0))
+        if ev["evaluation_error_rate"] is None or ev["evaluation_error_rate"] > max_eval_err:
+            failures.append(
+                (
+                    "BROKEN_EVALUATION",
+                    f"harness/judge/invalid-case error rate {ev['evaluation_error_rate']} > "
+                    f"{max_eval_err}: the evidence itself is unreliable",
+                )
+            )
+        max_degraded = req.get("max_degraded_fraction")
+        if max_degraded is not None and ev["cases"]:
+            frac = ev["scored_after_tool_failure"] / ev["cases"]
+            if frac > float(max_degraded):
+                failures.append(
+                    (
+                        "DEGRADED_EVIDENCE",
+                        f"{ev['scored_after_tool_failure']} case(s) scored after a tool failure "
+                        f"({frac:.3f} > {max_degraded})",
+                    )
+                )
         max_p95 = req.get("max_p95_ms")
         if max_p95 is not None and (ev["p95_ms"] is None or ev["p95_ms"] > float(max_p95)):
             failures.append(("TOO_SLOW", f"p95 {ev['p95_ms']} ms > {max_p95} ms"))

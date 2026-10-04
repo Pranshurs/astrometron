@@ -101,11 +101,11 @@ forged receipt (which must be caught by a named rule):
 [PASS] J2  judge failures relabelled as TASK_FAILURE
 [PASS] R3  forged better-looking evidence offered to the router
 ...
-40/40 scenarios passed
+40/41 scenarios passed
 ```
 
 A mutation gate (`tools/mutation_gate.py`) breaks each critical invariant on purpose:
-64 mutants, 63 killed, 1 equivalent with a written proof. See
+66 mutants, 65 killed, 1 equivalent with a written proof. See
 [docs/TESTING.md](docs/TESTING.md).
 
 ## Write an eval

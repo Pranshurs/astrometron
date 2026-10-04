@@ -383,10 +383,22 @@
       "invariant": "shared attribution rule ignores failed model calls",
       "status": "KILLED",
       "killed_by": "tests/test_integrity.py::test_scenario[F2] - AssertionError: F2 attack..."
+    },
+    {
+      "id": "M66",
+      "invariant": "router accepts evidence from a broken evaluation",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R7] - AssertionError: R7 attack..."
+    },
+    {
+      "id": "M67",
+      "invariant": "router ignores tool-degraded evidence limit",
+      "status": "KILLED",
+      "killed_by": "tests/test_router.py::test_degraded_evidence_limit - AssertionError: a..."
     }
   ],
   "counts": {
-    "KILLED": 63,
+    "KILLED": 65,
     "SURVIVED": 0,
     "INVALID": 0,
     "EQUIVALENT": 1

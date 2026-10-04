@@ -21,6 +21,8 @@ requirements:
   max_evidence_age_days: 30        # default 30; null disables (explicitly)
   max_excluded_fraction: 0.0       # default 0: evidence with explicit exclusions fails
   require_pinned: false
+  max_evaluation_error_rate: 0.0   # default 0: HARNESS/JUDGE/INVALID_CASE errors break evidence
+  max_degraded_fraction: 0.1       # optional: cases scored after a recovered tool failure
 objective: cheapest                # cheapest | best_quality | fastest
 candidates:                        # same shape as an eval's provider block
   - {kind: openai-compat, base_url: http://127.0.0.1:8080/v1, model: qwen-7b, probe: true}
@@ -46,6 +48,8 @@ names the status.
 | Not `unavailable`, and the `probe` call succeeds | `UNAVAILABLE` |
 | Quality bound ≥ `min_success_rate` | `BELOW_QUALITY_FLOOR` |
 | Error rate ≤ `max_error_rate` | `UNRELIABLE` |
+| (HARNESS + JUDGE + INVALID_CASE) / requested ≤ `max_evaluation_error_rate` (default 0). The measurement itself was broken. | `BROKEN_EVALUATION` |
+| Cases scored after a recovered tool failure / cases ≤ `max_degraded_fraction` (only if set) | `DEGRADED_EVIDENCE` |
 | p95 ≤ `max_p95_ms` | `TOO_SLOW` |
 | Cost known and ≤ `max_cost_per_case_usd` | `COST_UNKNOWN` / `TOO_EXPENSIVE` |
 

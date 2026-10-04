@@ -992,6 +992,26 @@ def r6(env: Env) -> Result:
     )
 
 
+@scenario("R7", "evidence from a broken evaluation offered to the router")
+def r7(env: Env) -> Result:
+    from .router import route
+
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 1.0}]
+    env.run(provider={"accuracy": 1.0})
+    honest = route(env.store, _policy(cand))["status"] == "SELECTED"
+    env.run(provider={"accuracy": 1.0}, solver={"function": f"{__name__}:crashing_solver"})
+    d = route(env.store, _policy(cand))  # no quality floor problem: 24/30 still PASS > 0.5
+    st = d["candidates"][0]
+    return Result(
+        "R7",
+        "",
+        "BROKEN_EVALUATION",
+        honest,
+        "BROKEN_EVALUATION" in (st.get("failed_gates") or []),
+        st["status"],
+    )
+
+
 def reseal_for_selfcheck(r: dict[str, Any]) -> dict[str, Any]:
     r["aggregate"] = aggregate(
         r["cases"],

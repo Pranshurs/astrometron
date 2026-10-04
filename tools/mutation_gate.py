@@ -505,6 +505,21 @@ MUTANTS: list[Mutant] = [
         '            return ("model", str(step.get("error_kind")))\n',
         "            return None\n",
     ),
+    Mutant(
+        "M66",
+        "router accepts evidence from a broken evaluation",
+        S + "router.py",
+        '        if ev["evaluation_error_rate"] is None or ev["evaluation_error_rate"] > '
+        "max_eval_err:\n",
+        "        if False:\n",
+    ),
+    Mutant(
+        "M67",
+        "router ignores tool-degraded evidence limit",
+        S + "router.py",
+        "            if frac > float(max_degraded):\n",
+        "            if False:\n",
+    ),
 ]
 #: id -> written justification for a mutant that cannot change observable behaviour
 EQUIVALENT: dict[str, str] = {

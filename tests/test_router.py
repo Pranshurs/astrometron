@@ -164,3 +164,21 @@ def test_objectives_and_decision_recorded(store: Store, data_file: Path) -> None
     )
     assert cheapest["selected"] == "mock/cheap" and best["selected"] == "mock/good"
     assert store.get_object(cheapest["decision_digest"])["decision_id"] == cheapest["decision_id"]
+
+
+def test_degraded_evidence_limit(store: Store, data_file: Path) -> None:
+    tools = [{"name": "broken", "version": "1", "function": "helpers_mod:broken_tool"}]
+    run_eval(
+        make_config(
+            data_file,
+            provider=GOOD,
+            pricing=PRICES,
+            tools=tools,
+            solver={"function": "helpers_mod:recovering_tool_solver"},
+        ),
+        store,
+    )
+    assert route(store, policy([GOOD]))["status"] == "SELECTED"  # reported, not enforced
+    d = route(store, policy([GOOD], max_degraded_fraction=0.1))
+    assert by(d, "mock/good")["status"] == "DEGRADED_EVIDENCE"
+    assert by(d, "mock/good")["evidence"]["scored_after_tool_failure"] == 20
