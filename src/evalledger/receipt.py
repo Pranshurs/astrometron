@@ -254,6 +254,11 @@ def verify_receipt(r: Mapping[str, Any]) -> Verification:
                 v.add(f"{cid}: outcome {outcome} contradicts score.passed={score['passed']}")
             if c.get("error"):
                 v.add(f"{cid}: {outcome} but an error is recorded ({c['error'].get('stage')})")
+            if (r.get("scorer") or {}).get("name") == "judge" and (
+                not isinstance(score, Mapping)
+                or (score.get("evidence") or {}).get("parse_status") != "OK"
+            ):
+                v.add(f"{cid}: {outcome} from a judge scorer without a parsed judge verdict")
             calls = [s for s in c.get("trajectory") or [] if s.get("type") == "model_call"]
             if calls and calls[-1].get("status") != "OK":
                 v.add(

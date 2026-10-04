@@ -380,7 +380,38 @@ class Store:
                     v.add(f"dataset binding: case {cid} not in snapshot {rev}")
                 elif ds.row_digest(cid) != c.get("row_digest"):
                     v.add(f"dataset binding: case {cid} row digest differs from snapshot")
+            v_sel = self._rederive_selection(receipt, ds)
+            if v_sel:
+                v.add(v_sel)
         return v
+
+    @staticmethod
+    def _rederive_selection(receipt: Mapping[str, Any], ds: Dataset) -> str | None:
+        """Re-apply the recorded selection spec to the snapshot; it must give the same ids."""
+        sel = dict(receipt.get("dataset", {}).get("selection") or {})
+        try:
+            ids = ds.select(
+                split=sel.get("split"),
+                tags=sel.get("tags"),
+                case_ids=sel.get("case_ids"),
+                limit=sel.get("limit"),
+                sample=sel.get("sample"),
+                seed=int(sel.get("seed") or 0),
+            )
+        except DatasetError as exc:
+            return f"selection binding: recorded selection cannot be re-derived: {exc}"
+        if ids != receipt["dataset"].get("selected_case_ids"):
+            return (
+                "selection binding: selected_case_ids differ from the selection re-derived "
+                f"from the dataset snapshot ({len(ids)} expected, "
+                f"{len(receipt['dataset'].get('selected_case_ids') or [])} recorded)"
+            )
+        if sel != {
+            **(receipt.get("config", {}).get("dataset", {}).get("select") or {}),
+            "seed": sel.get("seed"),
+        }:
+            return "selection binding: recorded selection differs from the recorded config"
+        return None
 
     def is_trustworthy(self, run_id: str) -> bool:
         row = self.run_row(run_id)
