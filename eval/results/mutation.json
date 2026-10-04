@@ -136,7 +136,7 @@
       "id": "M23",
       "invariant": "provider failure swallowed by solver is not attributed",
       "status": "KILLED",
-      "killed_by": "tests/test_integrity.py::test_scenario[F2] - AssertionError: F2 contro..."
+      "killed_by": "tests/test_integrity.py::test_scenario[F2] - AssertionError: F2 attack..."
     },
     {
       "id": "M24",
@@ -287,10 +287,106 @@
       "invariant": "literal credentials accepted in config",
       "status": "KILLED",
       "killed_by": "tests/test_cli.py::test_config_errors_exit_2 - assert 'literal credent..."
+    },
+    {
+      "id": "M49",
+      "invariant": "index columns not bound to the receipt",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[A7] - AssertionError: A7 attack..."
+    },
+    {
+      "id": "M51",
+      "invariant": "compare skips store verification",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[C4] - AssertionError: C4 attack..."
+    },
+    {
+      "id": "M52",
+      "invariant": "unserialisable case record aborts the run",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[E3] - AssertionError: E3 contro..."
+    },
+    {
+      "id": "M53",
+      "invariant": "swallowed tool failure without model follow-up scored",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[G2] - AssertionError: G2 contro..."
+    },
+    {
+      "id": "M54",
+      "invariant": "verifier accepts verdict after unrecovered tool failure",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[G2] - AssertionError: G2 attack..."
+    },
+    {
+      "id": "M55",
+      "invariant": "all-outage rerun reported as REPRODUCED",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[I2] - AssertionError: I2 attack..."
+    },
+    {
+      "id": "M56",
+      "invariant": "interrupted run compared as STRONGLY_COMPARABLE",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[C5] - AssertionError: C5 attack..."
+    },
+    {
+      "id": "M57",
+      "invariant": "paired statistics include unscored cases",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[C5] - AssertionError: C5 attack..."
+    },
+    {
+      "id": "M58",
+      "invariant": "router ignores explicit exclusions",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R5] - AssertionError: R5 attack..."
+    },
+    {
+      "id": "M59",
+      "invariant": "router accepts evidence from another endpoint",
+      "status": "KILLED",
+      "killed_by": "tests/test_review_findings.py::test_router_rejects_evidence_from_other_endpoint"
+    },
+    {
+      "id": "M60",
+      "invariant": "evidence authoritative forever by default",
+      "status": "KILLED",
+      "killed_by": "tests/test_review_findings.py::test_default_evidence_age_applies - Ass..."
+    },
+    {
+      "id": "M61",
+      "invariant": "python provider claims determinism by default",
+      "status": "KILLED",
+      "killed_by": "tests/test_review_findings.py::test_python_provider_unpinned_unless_declared"
+    },
+    {
+      "id": "M62",
+      "invariant": "unmapped reserved columns dropped from the row digest",
+      "status": "KILLED",
+      "killed_by": "tests/test_dataset.py::test_unmapped_reserved_columns_are_hashed - Ass..."
+    },
+    {
+      "id": "M63",
+      "invariant": "reproduce ignores served-model changes",
+      "status": "KILLED",
+      "killed_by": "tests/test_review_findings.py::test_reproduce_flags_served_model_change"
+    },
+    {
+      "id": "M64",
+      "invariant": "numeric scorer accepts float() quirks",
+      "status": "KILLED",
+      "killed_by": "tests/test_review_findings.py::test_numeric_scorer_is_strict - Asserti..."
+    },
+    {
+      "id": "M65",
+      "invariant": "shared attribution rule ignores failed model calls",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[F2] - AssertionError: F2 attack..."
     }
   ],
   "counts": {
-    "KILLED": 47,
+    "KILLED": 63,
     "SURVIVED": 0,
     "INVALID": 0,
     "EQUIVALENT": 1

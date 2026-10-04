@@ -19,6 +19,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .canonical import digest
+from .solver import unattributed_failure
 from .taxonomy import NOT_ATTEMPTED, ORDER, SCORED, Outcome
 
 RECEIPT_SCHEMA = "evalledger.receipt/v1"
@@ -139,6 +140,9 @@ def aggregate(
             "complete": unknown == 0,
         },
         "labels": labels or None,
+        "scored_after_tool_failure": sum(
+            1 for c in cases if c["outcome"] in {o.value for o in SCORED} and c.get("degraded")
+        ),
     }
 
 
@@ -149,7 +153,7 @@ def inputs_block(r: Mapping[str, Any]) -> dict[str, Any]:
         "dataset_revision": r["dataset"]["revision"],
         "selected_digest": r["dataset"]["selected_digest"],
         "excluded": r["dataset"]["excluded"],
-        "provider": {k: ident.get(k) for k in ("provider", "model", "revision")},
+        "provider": {k: ident.get(k) for k in ("provider", "model", "revision", "endpoint")},
         "params": r["provider"]["params"],
         "prompt_digest": r["prompt"]["digest"],
         "solver": r["solver"],
@@ -259,11 +263,16 @@ def verify_receipt(r: Mapping[str, Any]) -> Verification:
                 or (score.get("evidence") or {}).get("parse_status") != "OK"
             ):
                 v.add(f"{cid}: {outcome} from a judge scorer without a parsed judge verdict")
-            calls = [s for s in c.get("trajectory") or [] if s.get("type") == "model_call"]
-            if calls and calls[-1].get("status") != "OK":
+            unattributed = unattributed_failure(c.get("trajectory") or [])
+            if unattributed is not None and unattributed[0] == "model":
                 v.add(
                     f"{cid}: {outcome} but the final model call failed "
                     "(provider failure counted as a model verdict)"
+                )
+            elif unattributed is not None:
+                v.add(
+                    f"{cid}: {outcome} but tool {unattributed[1]!r} failed after the last "
+                    "successful model call (tool failure counted as a model verdict)"
                 )
         elif outcome in _ERROR_OUTCOMES:
             if not c.get("error"):

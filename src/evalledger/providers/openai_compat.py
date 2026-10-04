@@ -10,10 +10,13 @@ file digest) *and* ``pinned: true``. Reproduction reports this honestly.
 
 from __future__ import annotations
 
+import http.client
 import json
+import math
 import os
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Mapping
 from typing import Any
@@ -22,6 +25,14 @@ from ..taxonomy import ErrorKind
 from .base import ProviderError, ProviderIdentity, Request, Response, Usage
 
 _MODEL_SIDE_HINTS = ("context_length", "context length", "content_filter", "maximum context")
+
+
+def _public_endpoint(url: str) -> str:
+    """scheme://host[:port]/path with any userinfo, query and fragment removed."""
+    parts = urllib.parse.urlsplit(url)
+    host = parts.hostname or ""
+    netloc = f"{host}:{parts.port}" if parts.port else host
+    return urllib.parse.urlunsplit((parts.scheme, netloc, parts.path.rstrip("/"), "", ""))
 
 
 class OpenAICompatProvider:
@@ -43,6 +54,7 @@ class OpenAICompatProvider:
             model=self.model,
             revision=str(self.revision) if self.revision else None,
             pinned=self.pinned,
+            endpoint=_public_endpoint(self.base_url),
         )
 
     def complete(self, request: Request) -> Response:
@@ -80,13 +92,19 @@ class OpenAICompatProvider:
             ) from None
         except TimeoutError as exc:
             raise ProviderError(ErrorKind.TIMEOUT, f"request timed out: {exc}") from None
-        except (urllib.error.URLError, ConnectionError, OSError) as exc:
+        except (urllib.error.URLError, ConnectionError, OSError, http.client.HTTPException) as exc:
             raise ProviderError(
                 ErrorKind.INFRA, f"connection failed: {exc}", retryable=True
             ) from None
         latency = (time.perf_counter() - start) * 1000.0
         try:
             data = json.loads(payload)
+        except ValueError:
+            # Not an API response at all (e.g. a proxy's HTML error page): availability.
+            raise ProviderError(
+                ErrorKind.INFRA, "non-JSON response from endpoint", retryable=True
+            ) from None
+        try:
             choice = data["choices"][0]
             message = choice.get("message") or {}
             text = message.get("content")
@@ -104,7 +122,9 @@ class OpenAICompatProvider:
             usage=Usage(
                 input_tokens=usage.get("prompt_tokens"),
                 output_tokens=usage.get("completion_tokens"),
-                reported_cost_usd=float(cost) if isinstance(cost, (int, float)) else None,
+                reported_cost_usd=float(cost)
+                if isinstance(cost, (int, float)) and math.isfinite(cost)
+                else None,
             ),
             served_model=data.get("model"),
             latency_ms=latency,

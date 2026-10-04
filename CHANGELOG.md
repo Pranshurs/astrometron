@@ -12,4 +12,8 @@ First local release candidate. Not yet published.
 - Scorers: exact, normalized, regex, numeric, json_fields, classification, python, judge.
 - Tool/agent trajectory evidence; `tool_loop` solver.
 - Evidence-backed router with fail-closed gates.
-- 32-scenario adversarial integrity suite; 48-mutant mutation gate.
+- 40-scenario adversarial integrity suite; 64-mutant mutation gate.
+- Fixes from an independent cold review: index columns bound to receipts, store-verified
+  comparison, per-case record validation, tool-failure attribution, NO_SCORED_CASES,
+  interrupted runs and unscored cases kept out of paired statistics, endpoint-aware
+  identity, exclusion and default-age routing gates, order-independent invalid rows.

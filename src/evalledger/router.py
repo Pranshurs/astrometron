@@ -57,7 +57,11 @@ REQ_KEYS = {
     "max_evidence_age_days",
     "max_error_rate",
     "require_pinned",
+    "max_excluded_fraction",
 }
+#: Evidence is never authoritative forever: applied when the policy does not set an age.
+#: Set ``max_evidence_age_days: null`` explicitly to disable.
+DEFAULT_MAX_AGE_DAYS = 30
 OBJECTIVES = ("cheapest", "best_quality", "fastest")
 
 ELIGIBLE = "ELIGIBLE"
@@ -107,6 +111,7 @@ def _basis(r: Mapping[str, Any]) -> dict[str, Any]:
         "selected_digest": r["dataset"]["selected_digest"],
         "scorer": digest(r["scorer"]),
         "judge": digest(r.get("judge")),
+        "excluded": digest(r["dataset"]["excluded"]),
     }
 
 
@@ -119,7 +124,12 @@ def _evidence_summary(r: Mapping[str, Any], age: float) -> dict[str, Any]:
         "receipt_digest": r["receipt_digest"],
         "finished_at": r["timing"]["finished_at"],
         "age_days": round(age, 3),
-        "cases": agg["requested"],
+        "cases": agg["pass_rate"]["denominator"],
+        "requested": agg["requested"],
+        "excluded": agg["excluded"],
+        "prompt_digest": r["prompt"]["digest"],
+        "params": r["provider"]["params"],
+        "endpoint": r["provider"]["identity"].get("endpoint"),
         "success_rate": agg["pass_rate"]["value"],
         "success_ci95": agg["pass_rate"]["ci95_wilson"],
         "error_rate": round(errors / agg["attempted"], 6) if agg["attempted"] else None,
@@ -159,6 +169,7 @@ def route(
             skipped.append({"run_id": row["run_id"], "reason": v.problems[0]})
             continue
         r = store.load_receipt(row["run_id"])
+        # (the index task column is bound to the receipt by verify_run above)
         if policy.get("dataset") and r["dataset"]["id"] != policy["dataset"]:
             continue
         evidence.append(r)
@@ -190,12 +201,25 @@ def route(
             continue
         entry["candidate"] = ident.key
         entry["current_revision"] = ident.revision
-        mine = [
+        same_key = [
             r
             for r in evidence
             if f"{r['provider']['identity']['provider']}/{r['provider']['identity']['model']}"
             == ident.key
         ]
+        # Evidence from another deployment (different endpoint) says nothing about this one.
+        mine = [r for r in same_key if r["provider"]["identity"].get("endpoint") == ident.endpoint]
+        if same_key and not mine:
+            entry.update(
+                status="DIFFERENT_DEPLOYMENT",
+                reasons=[
+                    "evidence exists only for endpoint "
+                    f"{same_key[0]['provider']['identity'].get('endpoint')!r}, "
+                    f"candidate is served from {ident.endpoint!r}"
+                ],
+            )
+            candidates.append(entry)
+            continue
         if not mine:
             entry.update(
                 status="NO_EVIDENCE", reasons=[f"no verified COMPLETE evaluation for task {task!r}"]
@@ -221,7 +245,7 @@ def route(
         ev = _evidence_summary(r, age)
         entry["evidence"] = ev
         failures: list[tuple[str, str]] = []
-        max_age = req.get("max_evidence_age_days")
+        max_age = req.get("max_evidence_age_days", DEFAULT_MAX_AGE_DAYS)
         if max_age is not None and age > float(max_age):
             failures.append(("STALE_EVIDENCE", f"evidence is {age:.1f} days old (max {max_age})"))
         if ev["revision"] != ident.revision:
@@ -233,6 +257,15 @@ def route(
             )
         if req.get("require_pinned") and not ident.pinned:
             failures.append(("UNPINNED_MODEL", "candidate model revision is not pinned"))
+        max_excl = float(req.get("max_excluded_fraction", 0.0))
+        if ev["requested"] and ev["excluded"] / ev["requested"] > max_excl:
+            failures.append(
+                (
+                    "EXCESSIVE_EXCLUSIONS",
+                    f"{ev['excluded']}/{ev['requested']} cases explicitly excluded "
+                    f"(max_excluded_fraction {max_excl})",
+                )
+            )
         min_cases = int(req.get("min_cases", 0))
         if ev["cases"] < min_cases:
             failures.append(("INSUFFICIENT_SAMPLE", f"{ev['cases']} cases < min_cases {min_cases}"))

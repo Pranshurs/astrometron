@@ -91,7 +91,7 @@ evalledger verify RUN_ID      # VALID | STALE (config/data changed since) | INVA
 
 ## Does it actually catch things?
 
-EvalLedger evaluates itself. `evalledger selfcheck` runs 32 adversarial scenarios. Each
+EvalLedger evaluates itself. `evalledger selfcheck` runs 40 adversarial scenarios. Each
 one pairs an honest control (which must verify) with a deliberately broken evaluator or
 forged receipt (which must be caught by a named rule):
 
@@ -101,11 +101,11 @@ forged receipt (which must be caught by a named rule):
 [PASS] J2  judge failures relabelled as TASK_FAILURE
 [PASS] R3  forged better-looking evidence offered to the router
 ...
-32/32 scenarios passed
+40/40 scenarios passed
 ```
 
 A mutation gate (`tools/mutation_gate.py`) breaks each critical invariant on purpose:
-48 mutants, 47 killed, 1 equivalent with a written proof. See
+64 mutants, 63 killed, 1 equivalent with a written proof. See
 [docs/TESTING.md](docs/TESTING.md).
 
 ## Write an eval

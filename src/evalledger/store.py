@@ -331,7 +331,7 @@ class Store:
                     raise StoreError("no runs in store")
                 return str(row[0])
             rows = con.execute(
-                "SELECT run_id FROM runs WHERE run_id LIKE ? || '%'", (ref,)
+                "SELECT run_id FROM runs WHERE substr(run_id, 1, ?) = ?", (len(ref), ref)
             ).fetchall()
         if not rows:
             raise StoreError(f"no run matching {ref!r}")
@@ -385,6 +385,12 @@ class Store:
             v.add("receipt digest differs from the digest indexed when the run finished")
         if row["status"] != receipt.get("status"):
             v.add(f"index status {row['status']} != receipt status {receipt.get('status')}")
+        for column, value in self._index_view(receipt).items():
+            if row.get(column) != value:
+                v.add(
+                    f"index binding: column {column!r} is {row.get(column)!r} in the index "
+                    f"but {value!r} in the receipt"
+                )
         rev = receipt.get("dataset", {}).get("revision")
         try:
             ds = self.get_dataset(rev)
@@ -401,6 +407,31 @@ class Store:
             if v_sel:
                 v.add(v_sel)
         return v
+
+    @staticmethod
+    def _index_view(receipt: Mapping[str, Any]) -> dict[str, Any]:
+        """What every queryable index column must say, derived from the receipt."""
+        try:
+            ident = receipt["provider"]["identity"]
+            return {
+                "name": receipt["eval"]["name"],
+                "task": receipt["eval"]["task"],
+                "started_at": receipt["timing"]["started_at"],
+                "finished_at": receipt["timing"]["finished_at"],
+                "dataset_id": receipt["dataset"]["id"],
+                "dataset_revision": receipt["dataset"]["revision"],
+                "provider": ident["provider"],
+                "model": ident["model"],
+                "model_revision": ident.get("revision"),
+                "pinned": int(bool(ident.get("pinned"))),
+                "scorer_digest": digest(receipt["scorer"]),
+                "inputs_digest": receipt["inputs_digest"],
+                "pass_rate": receipt["aggregate"]["pass_rate"]["value"],
+                "requested": receipt["aggregate"]["requested"],
+                "reproduces": receipt.get("reproduces"),
+            }
+        except (KeyError, TypeError) as exc:
+            return {"<receipt>": f"missing field {exc}"}
 
     @staticmethod
     def _rederive_selection(receipt: Mapping[str, Any], ds: Dataset) -> str | None:

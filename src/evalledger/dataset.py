@@ -242,18 +242,27 @@ def _row_to_case(row: Mapping[str, Any], fields: Mapping[str, str], where: str) 
     in_key = fields.get("input", "input")
     exp_key = fields.get("expected", "expected")
     raw_id: Any = None
+    id_source: str | None = None
     if id_key:
-        raw_id = row.get(id_key)
+        raw_id, id_source = row.get(id_key), id_key
     else:
         for k in _ID_KEYS:
             if k in row:
-                raw_id = row[k]
+                raw_id, id_source = row[k], k
                 break
-    used = {in_key, exp_key, "metadata", "tags", "split", *(_ID_KEYS), id_key}
-    metadata: dict[str, Any] = dict(row.get("metadata") or {})
+    # Every column that is not consumed as a field is kept in metadata, so every byte of
+    # the row contributes to its digest (including unmapped reserved names).
+    consumed = {in_key, exp_key, "metadata", "tags", "split", id_source}
+    meta_raw = row.get("metadata") or {}
+    if not isinstance(meta_raw, Mapping):
+        meta_raw = {"metadata": meta_raw}
+    metadata: dict[str, Any] = dict(meta_raw)
     for k, v in row.items():
-        if k not in used and k not in _RESERVED:
-            metadata[k] = v
+        if k in consumed:
+            continue
+        if k in metadata:
+            raise DatasetError(f"{where}: column {k!r} collides with a metadata key")
+        metadata[k] = v
     tags_raw = row.get("tags") or ()
     if isinstance(tags_raw, str):
         tags_raw = [t for t in tags_raw.split(";") if t]
@@ -261,7 +270,9 @@ def _row_to_case(row: Mapping[str, Any], fields: Mapping[str, str], where: str) 
     split = row.get("split") or None
     invalid: str | None = None
     if in_key not in row or row.get(in_key) in (None, ""):
-        invalid = f"missing input field {in_key!r} ({where})"
+        # No location in the reason: it is part of the row digest, which must not depend
+        # on file name or row order.
+        invalid = f"missing input field {in_key!r}"
     if raw_id is None or raw_id == "":
         # Identity derived from content: stable under reordering, changes with content.
         basis = row.get(in_key) if invalid is None else dict(row)

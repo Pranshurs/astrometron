@@ -18,6 +18,8 @@ DIVERGED                   inputs identical and pinned, but outcomes differ: hid
 REFUSED                    the original receipt does not verify; nothing is reproduced
                            from invalid evidence.
 VERIFIED_ONLY              ``execute=False``: inputs were checked, nothing was run.
+NO_SCORED_CASES            every re-run matched, but the original scored no case
+                           (e.g. all outages): there is no model behaviour to reproduce.
 """
 
 from __future__ import annotations
@@ -42,6 +44,7 @@ INPUT_MISMATCH = "INPUT_MISMATCH"
 DIVERGED = "DIVERGED"
 REFUSED = "REFUSED"
 VERIFIED_ONLY = "VERIFIED_ONLY"
+NO_SCORED_CASES = "NO_SCORED_CASES"
 
 
 def staleness(receipt: Mapping[str, Any]) -> list[str]:
@@ -110,7 +113,7 @@ def _current_identities(receipt: Mapping[str, Any], base_dir: Path) -> dict[str,
 def check_inputs(receipt: Mapping[str, Any], current: Mapping[str, Any]) -> list[str]:
     mism: list[str] = []
     rp, cp = receipt["provider"]["identity"], current["provider"]
-    for k in ("provider", "model", "revision"):
+    for k in ("provider", "model", "revision", "endpoint"):
         if rp.get(k) != cp.get(k):
             mism.append(f"provider {k}: recorded {rp.get(k)!r}, now {cp.get(k)!r}")
     if digest(receipt["scorer"]) != digest(current["scorer"]):
@@ -126,7 +129,7 @@ def check_inputs(receipt: Mapping[str, Any], current: Mapping[str, Any]) -> list
     return mism
 
 
-def reproduce(store: Store, run_id: str, *, execute: bool = True) -> Reproduction:
+def reproduce(store: Store, run_id: str, *, execute: bool = True, repeats: int = 1) -> Reproduction:
     rep = Reproduction(verdict=REFUSED, original=run_id)
     check = store.verify_run(run_id)
     if not check.ok:
@@ -160,33 +163,46 @@ def reproduce(store: Store, run_id: str, *, execute: bool = True) -> Reproductio
         rep.verdict = INPUT_MISMATCH if rep.mismatches else VERIFIED_ONLY
         return rep
     cfg = from_dict(receipt["config"], base_dir)
-    new = run_eval(cfg, store, dataset=dataset, reproduces=run_id)
-    rep.new_run = new["run_id"]
-    if new["inputs_digest"] != receipt["inputs_digest"] and not rep.mismatches:
-        a, b = inputs_block(receipt), inputs_block(new)
-        rep.mismatches.append(
-            "inputs differ: " + ", ".join(sorted(k for k in a if digest(a[k]) != digest(b[k])))
-        )
     old_cases = {c["case_id"]: c for c in receipt["cases"]}
-    differing = [
-        c["case_id"]
-        for c in new["cases"]
-        if (c["outcome"], c.get("output_digest"))
-        != (old_cases[c["case_id"]]["outcome"], old_cases[c["case_id"]].get("output_digest"))
-    ]
-    n = len(new["cases"])
+    scored_original = sum(c["outcome"] in ("PASS", "TASK_FAILURE") for c in receipt["cases"])
+    differing: set[str] = set()
+    new_runs: list[str] = []
+    new: dict[str, Any] = {}
+    for _ in range(max(1, repeats)):
+        new = run_eval(cfg, store, dataset=dataset, reproduces=run_id)
+        new_runs.append(new["run_id"])
+        if new["inputs_digest"] != receipt["inputs_digest"]:
+            a, b = inputs_block(receipt), inputs_block(new)
+            msg = "inputs differ: " + ", ".join(
+                sorted(k for k in a if digest(a[k]) != digest(b[k]))
+            )
+            if msg not in rep.mismatches:
+                rep.mismatches.append(msg)
+        served_old = sorted(receipt["provider"].get("served_models") or [])
+        served_new = sorted(new["provider"].get("served_models") or [])
+        if served_old != served_new:
+            msg = f"provider served {served_new}, original run was served {served_old}"
+            if msg not in rep.mismatches:
+                rep.mismatches.append(msg)
+        differing |= {
+            c["case_id"]
+            for c in new["cases"]
+            if (c["outcome"], c.get("output_digest"))
+            != (old_cases[c["case_id"]]["outcome"], old_cases[c["case_id"]].get("output_digest"))
+        }
+    rep.new_run = new_runs[-1]
+    n = len(receipt["cases"])
     infra = {"INFRA_ERROR", "TIMEOUT", "CANCELLED"}
     rep.agreement = {
         "cases": n,
+        "repeats": len(new_runs),
+        "new_runs": new_runs,
+        "scored_in_original": scored_original,
         "identical": n - len(differing),
         "differing": len(differing),
-        "differing_cases": differing[:50],
+        "differing_cases": sorted(differing)[:50],
         "infra_only": bool(differing)
-        and all(
-            new_c["outcome"] in infra or old_cases[new_c["case_id"]]["outcome"] in infra
-            for new_c in new["cases"]
-            if new_c["case_id"] in set(differing)
-        ),
+        and all(old_cases[cid]["outcome"] in infra for cid in differing),
         "outcomes_digest_equal": new["outcomes_digest"] == receipt["outcomes_digest"],
         "pass_rate": [
             receipt["aggregate"]["pass_rate"]["value"],
@@ -199,6 +215,15 @@ def reproduce(store: Store, run_id: str, *, execute: bool = True) -> Reproductio
         rep.verdict = NOT_EXACT
     elif differing:
         rep.verdict = DIVERGED
+    elif scored_original == 0:
+        # Identical outages reproduce nothing about the model.
+        rep.verdict = NO_SCORED_CASES
+        rep.notes.append("no case was scored in the original run: nothing to reproduce")
     else:
         rep.verdict = REPRODUCED
+        if len(new_runs) == 1:
+            rep.notes.append(
+                "one re-run agreed on every case; use --repeats N for stronger evidence of "
+                "determinism"
+            )
     return rep

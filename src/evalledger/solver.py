@@ -209,12 +209,26 @@ class SolverContext:
     # -- attribution ----------------------------------------------------------
     def unrecovered_model_error(self) -> ErrorKind | None:
         """Kind of the last model call's error if no later model call succeeded."""
-        for step in reversed(self.steps):
-            if step["type"] == "model_call":
-                if step["status"] == "OK":
-                    return None
-                return ErrorKind(step["error_kind"])
-        return None
+        found = unattributed_failure(self.steps)
+        return ErrorKind(found[1]) if found and found[0] == "model" else None
+
+
+def unattributed_failure(steps: Sequence[Mapping[str, Any]]) -> tuple[str, str] | None:
+    """The single attribution rule for a solver that returned normally.
+
+    Walk the trajectory backwards. If a failed step is reached before any successful
+    model call, the final answer cannot be the model's verdict on a working pipeline:
+    return ``("model", error_kind)`` or ``("tool", tool_name)``. A failure followed by a
+    successful model call was recovered from and is evidence only.
+    """
+    for step in reversed(steps):
+        if step.get("type") == "model_call":
+            if step.get("status") == "OK":
+                return None
+            return ("model", str(step.get("error_kind")))
+        if step.get("type") == "tool_call" and step.get("status") != "OK":
+            return ("tool", str(step.get("tool")))
+    return None
 
 
 def _canon_ok(v: Any) -> bool:

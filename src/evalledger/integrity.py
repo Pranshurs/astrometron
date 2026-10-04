@@ -412,7 +412,14 @@ def d3(env: Env) -> Result:
 
     sys.path.insert(0, str(env.root))
     try:
-        r = env.run(provider={"kind": "python", "function": "swap_model:answer", "model": "m"})
+        r = env.run(
+            provider={
+                "kind": "python",
+                "function": "swap_model:answer",
+                "model": "m",
+                "pinned": True,
+            }
+        )
         honest = reproduce(env.store, r["run_id"]).verdict == REPRODUCED
         mod.write_text("def answer(req):\n    return 'a1'  # now a different model\n\n")
         importlib.reload(sys.modules["swap_model"])
@@ -773,6 +780,225 @@ def r4(env: Env) -> Result:
         d["candidates"][0]["status"] == "COST_UNKNOWN",
         d["candidates"][0]["status"],
     )
+
+
+# -- scenarios added after the independent review --------------------------------
+
+
+def _cost_provider(request: Request, poison: bool) -> Any:
+    from .providers import Response, Usage
+
+    cost = float("nan") if poison and (request.case_id or "").endswith("3") else 0.001
+    return Response(text="x", usage=Usage(1, 1, cost), served_model="cost")
+
+
+def finite_cost_provider(request: Request) -> Any:
+    return _cost_provider(request, poison=False)
+
+
+def nan_cost_provider(request: Request) -> Any:
+    return _cost_provider(request, poison=True)
+
+
+def tool_swallowing_solver(ctx: SolverContext) -> str:
+    from .solver import ToolFailure
+
+    ctx.model()
+    try:
+        return str(ctx.tool("inventory", order=ctx.case.case_id))
+    except ToolFailure:
+        return ctx.case.expected if isinstance(ctx.case.expected, str) else ""
+
+
+@scenario("A7", "index-only tamper: run re-labelled as evidence for another task/model")
+def a7(env: Env) -> Result:
+    import sqlite3
+
+    r = env.run()
+    honest = env.store.verify_run(r["run_id"]).ok
+    con = sqlite3.connect(env.store.db_path)
+    con.execute(
+        "UPDATE runs SET task='medical', model='frontier', pass_rate=0.99 WHERE run_id=?",
+        (r["run_id"],),
+    )
+    con.commit()
+    con.close()
+    v = env.store.verify_run(r["run_id"])
+    rule = "index binding"
+    return Result("A7", "", rule, honest, _has(v.problems, rule), "; ".join(v.problems[:2]))
+
+
+@scenario("C4", "compare offered a re-sealed forged receipt (index untouched)")
+def c4(env: Env) -> Result:
+    from .compare import NOT, compare_runs
+
+    a = env.run()
+    b = env.run(provider={"model": "model-b"})
+    honest = compare_runs(env.store, a["run_id"], b["run_id"])["comparability"] == STRONG
+    forged = copy.deepcopy(b)
+    for c in forged["cases"]:
+        if c["outcome"] == "TASK_FAILURE":
+            c["outcome"] = "PASS"
+            c["score"] = {"passed": True, "value": 1.0}
+    env.overwrite(reseal_for_selfcheck(forged))
+    res = compare_runs(env.store, a["run_id"], b["run_id"])
+    detected = res["comparability"] == NOT and "fails store verification" in res["reasons"][0]
+    return Result(
+        "C4",
+        "",
+        "NOT_DIRECTLY_COMPARABLE (store verification)",
+        honest,
+        detected,
+        str(res["reasons"][:1]),
+    )
+
+
+@scenario("C5", "interrupted run compared as if complete")
+def c5(env: Env) -> Result:
+    a = env.run()
+    honest = compare(a, env.run(provider={"model": "model-b"}))["comparability"] == STRONG
+    b = copy.deepcopy(env.run(provider={"model": "model-b"}))
+    b["status"] = "INCOMPLETE"
+    for c in b["cases"][10:]:
+        c.update(
+            outcome="CANCELLED",
+            score=None,
+            output_digest=None,
+            trajectory=[],
+            error={"stage": "run", "message": "interrupted"},
+            latency_ms={},
+            usage=[],
+            cost_usd=None,
+            cost_basis="none",
+        )
+        c.pop("output", None)
+    res = compare(a, reseal_for_selfcheck(b))
+    p = res.get("paired") or {}
+    detected = res["comparability"] == PARTIAL and p.get("cases") == 10
+    return Result(
+        "C5",
+        "",
+        "PARTIALLY_COMPARABLE, cancelled cases not paired",
+        honest,
+        detected,
+        f"{res['comparability']} paired={p.get('cases')}",
+    )
+
+
+@scenario("E3", "provider returns a non-finite cost for one case")
+def e3(env: Env) -> Result:
+    ok = env.run(
+        provider={"kind": "python", "function": f"{__name__}:finite_cost_provider", "model": "cost"}
+    )
+    honest = ok["aggregate"]["counts"]["HARNESS_ERROR"] == 0 and ok["aggregate"]["cost"]["complete"]
+    r = env.run(
+        provider={"kind": "python", "function": f"{__name__}:nan_cost_provider", "model": "cost"}
+    )
+    c = r["aggregate"]["counts"]
+    bad = [x for x in r["cases"] if x["outcome"] == "HARNESS_ERROR"]
+    detected = (
+        r["status"] == "COMPLETE"
+        and c["HARNESS_ERROR"] == 3
+        and all(x["error"]["stage"] == "record" for x in bad)
+        and env.store.verify_run(r["run_id"]).ok
+    )
+    return Result(
+        "E3",
+        "",
+        "HARNESS_ERROR for that case; run completes",
+        honest,
+        detected,
+        f"status={r['status']} HARNESS_ERROR={c['HARNESS_ERROR']}",
+    )
+
+
+@scenario("G2", "solver swallows a tool failure and answers without the model")
+def g2(env: Env) -> Result:
+    tools = [{"name": "inventory", "version": "3.1", "function": f"{__name__}:flaky_tool"}]
+    honest_r = env.run(tools=tools, solver={"function": f"{__name__}:tool_solver"})
+    honest = honest_r["aggregate"]["counts"]["TOOL_ERROR"] == 3
+    r = env.run(tools=tools, solver={"function": f"{__name__}:tool_swallowing_solver"})
+    c = r["aggregate"]["counts"]
+    forged = copy.deepcopy(r)
+    for x in forged["cases"]:
+        if x["outcome"] == "TOOL_ERROR":
+            x.update(outcome="PASS", error=None, score={"passed": True, "value": 1.0})
+    v = verify_receipt(reseal_for_selfcheck(forged))
+    detected = c["TOOL_ERROR"] == 3 and _has(v.problems, "tool failure counted as a model verdict")
+    return Result(
+        "G2",
+        "",
+        "TOOL_ERROR; relabelling rejected",
+        honest,
+        detected,
+        f"TOOL_ERROR={c['TOOL_ERROR']}; {v.problems[:1]}",
+    )
+
+
+@scenario("I2", "rerun of a run in which every case was an outage")
+def i2(env: Env) -> Result:
+    from .reproduce import NO_SCORED_CASES
+
+    honest = reproduce(env.store, env.run()["run_id"]).verdict == REPRODUCED
+    r = env.run(provider={"infra_error_rate": 1.0})
+    rep = reproduce(env.store, r["run_id"])
+    return Result(
+        "I2",
+        "",
+        "NO_SCORED_CASES (not REPRODUCED)",
+        honest,
+        rep.verdict == NO_SCORED_CASES,
+        rep.verdict,
+    )
+
+
+@scenario("R5", "failing cases cherry-picked into exclusions to pass the router")
+def r5(env: Env) -> Result:
+    from .router import route
+
+    cand = [{"kind": "mock", "model": "model-a", "accuracy": 0.8}]
+    honest_run = env.run()
+    honest = route(env.store, _policy(cand))["status"] == "SELECTED"
+    failing = [c["case_id"] for c in honest_run["cases"] if c["outcome"] != "PASS"]
+    env.run(dataset={"exclude": [{"case_id": f, "reason": "ambiguous label"} for f in failing]})
+    d = route(env.store, _policy(cand, min_success_rate=0.95))
+    st = d["candidates"][0]
+    return Result(
+        "R5",
+        "",
+        "EXCESSIVE_EXCLUSIONS",
+        honest,
+        "EXCESSIVE_EXCLUSIONS" in (st.get("failed_gates") or []),
+        st["status"],
+    )
+
+
+@scenario("R6", "evidence from one endpoint offered for another deployment")
+def r6(env: Env) -> Result:
+    from .providers import OpenAICompatProvider
+
+    a = OpenAICompatProvider({"model": "x", "base_url": "https://api.example/v1"}).identity()
+    b = OpenAICompatProvider({"model": "x", "base_url": "http://127.0.0.1:8080/v1"}).identity()
+    c = OpenAICompatProvider({"model": "x", "base_url": "https://u:p@api.example/v1/"}).identity()
+    detected = a.endpoint != b.endpoint and a.key == b.key and "u:p" not in str(c.endpoint)
+    same = OpenAICompatProvider({"model": "x", "base_url": "https://api.example/v1/"}).identity()
+    return Result(
+        "R6",
+        "",
+        "endpoint is part of identity (credential-free)",
+        a == same,
+        detected,
+        f"{a.endpoint} vs {b.endpoint}; {c.endpoint}",
+    )
+
+
+def reseal_for_selfcheck(r: dict[str, Any]) -> dict[str, Any]:
+    r["aggregate"] = aggregate(
+        r["cases"],
+        r["dataset"]["selected_case_ids"],
+        [e["case_id"] for e in r["dataset"]["excluded"]],
+    )
+    return seal(r)
 
 
 def run_suite(only: list[str] | None = None) -> list[dict[str, Any]]:

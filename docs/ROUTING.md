@@ -18,7 +18,8 @@ requirements:
   max_cost_per_case_usd: 0.01      # UNKNOWN cost fails closed when set
   max_error_rate: 0.05             # (INFRA + MODEL + TIMEOUT) / attempted
   min_cases: 100
-  max_evidence_age_days: 30
+  max_evidence_age_days: 30        # default 30; null disables (explicitly)
+  max_excluded_fraction: 0.0       # default 0: evidence with explicit exclusions fails
   require_pinned: false
 objective: cheapest                # cheapest | best_quality | fastest
 candidates:                        # same shape as an eval's provider block
@@ -35,11 +36,13 @@ names the status.
 |---|---|
 | Candidate builds from config | `CONFIG_ERROR` |
 | A COMPLETE, fully verified run exists for (task, provider/model). Tampered and crashed runs are skipped and listed under `skipped_invalid_evidence`. | `NO_EVIDENCE` |
-| Evidence is on the routing basis: same dataset revision, selection, scorer and judge. The basis is the pinned revision, or else the newest verified run's. | `INCOMPARABLE_EVIDENCE` |
-| Evidence age ≤ `max_evidence_age_days` | `STALE_EVIDENCE` |
+| Evidence is on the routing basis: same dataset revision, selection, exclusions, scorer and judge. The basis is the pinned revision, or else the newest verified run's. | `INCOMPARABLE_EVIDENCE` |
+| Evidence was gathered against the candidate's endpoint (credential-free URL) | `DIFFERENT_DEPLOYMENT` |
+| Evidence age ≤ `max_evidence_age_days` (default 30 days) | `STALE_EVIDENCE` |
 | Evaluated model revision = candidate's current revision | `MODEL_REVISION_CHANGED` |
 | `require_pinned` | `UNPINNED_MODEL` |
-| Cases ≥ `min_cases` | `INSUFFICIENT_SAMPLE` |
+| Explicitly excluded / requested ≤ `max_excluded_fraction` (default 0) | `EXCESSIVE_EXCLUSIONS` |
+| Cases in the headline denominator ≥ `min_cases` | `INSUFFICIENT_SAMPLE` |
 | Not `unavailable`, and the `probe` call succeeds | `UNAVAILABLE` |
 | Quality bound ≥ `min_success_rate` | `BELOW_QUALITY_FLOOR` |
 | Error rate ≤ `max_error_rate` | `UNRELIABLE` |

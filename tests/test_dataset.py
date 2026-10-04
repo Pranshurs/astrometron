@@ -86,3 +86,21 @@ def test_invalid_json_line_reports_location(tmp_path: Path) -> None:
     p.write_text(json.dumps({"id": 1, "input": "x"}) + "\n{oops\n")
     with pytest.raises(DatasetError, match=":2:"):
         load_file(p)
+
+
+def test_invalid_rows_do_not_depend_on_order_or_file_name(tmp_path: Path) -> None:
+    rows = [{"id": "a", "input": "x"}, {"id": "b", "expected": "y"}]
+    a = load_file(write_jsonl(tmp_path / "one.jsonl", rows), "ds")
+    b = load_file(write_jsonl(tmp_path / "two.jsonl", list(reversed(rows))), "ds")
+    assert a.revision == b.revision
+
+
+def test_unmapped_reserved_columns_are_hashed(tmp_path: Path) -> None:
+    fields = {"id": "ticket", "input": "text", "expected": "label"}
+    base = {"ticket": "t1", "text": "hi", "label": "x", "id": "1", "input": "a", "expected": "b"}
+    a = load_file(write_jsonl(tmp_path / "a.jsonl", [base]), "ds", fields=fields)
+    b = load_file(
+        write_jsonl(tmp_path / "b.jsonl", [{**base, "input": "CHANGED"}]), "ds", fields=fields
+    )
+    assert a.revision != b.revision
+    assert a.case("t1").metadata == {"id": "1", "input": "a", "expected": "b"}

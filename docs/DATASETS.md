@@ -36,14 +36,16 @@ Datasets with zero cases or duplicate case ids are refused.
 ## Formats
 
 - **JSONL**: one JSON object per line. Reserved keys are `id`/`case_id`, `input`,
-  `expected`, `metadata`, `tags`, `split`. Any other key is folded into `metadata`, so it
-  still counts toward the digest. Remap keys with
+  `expected`, `metadata`, `tags`, `split`. Every key not consumed as a field is folded
+  into `metadata`, so every byte of a row counts toward its digest. That includes
+  reserved names left unused by a `fields` remapping, such as
   `dataset.fields: {id: ticket_id, input: text, expected: label}`.
 - **CSV**: same keys as columns. Values are strings. `tags` is `;`-separated.
 - **Python**: `evalledger.dataset.load_rows("my-ds", rows)`.
 
 A row without an input is kept as a case with `invalid_reason`. It resolves to
-`INVALID_CASE` and still counts in the denominator.
+`INVALID_CASE` and still counts in the denominator. The reason never includes a file
+name or line number, so the digest stays independent of row order and file path.
 
 ## Snapshots and the parent chain
 

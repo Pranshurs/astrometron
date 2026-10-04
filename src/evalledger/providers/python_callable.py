@@ -2,8 +2,9 @@
 
 The function receives the :class:`Request` and returns a ``str`` or a :class:`Response`.
 Its identity revision is the digest of the function's source, so editing the function
-is visible in the receipt. Raise :class:`ProviderError` to signal typed failures; any
-other exception is a HARNESS_ERROR (the function is harness code).
+is visible in the receipt. It is pinned (deterministic) only with ``pinned: true``.
+Raise :class:`ProviderError` to signal typed failures; any other exception is a
+HARNESS_ERROR (the function is harness code).
 """
 
 from __future__ import annotations
@@ -42,7 +43,9 @@ class PythonProvider:
         self.spec = str(self.options["function"])
         self.fn = resolve_callable(self.spec)
         self.model = str(self.options.get("model", self.spec))
-        self.pinned = bool(self.options.get("pinned", True))
+        # Source digest pins the code, not its behaviour: the function may call a remote
+        # model or use randomness. Exactness is claimed only when the config says so.
+        self.pinned = bool(self.options.get("pinned", False))
         self._revision = source_digest(self.fn)
 
     def identity(self) -> ProviderIdentity:

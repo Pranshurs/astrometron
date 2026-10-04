@@ -10,6 +10,7 @@ never stored as evidence.
 from __future__ import annotations
 
 import importlib.metadata
+import logging
 import os
 import platform
 import secrets
@@ -23,8 +24,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from . import __version__
-from .canonical import digest, digest_bytes, digest_text
+from . import __version__, log
+from .canonical import CanonicalizationError, canonical_bytes, digest, digest_bytes, digest_text
 from .config import EvalConfig
 from .cost import PriceTable, case_cost, load_price_table
 from .dataset import Case, Dataset, Provenance, load_file
@@ -50,9 +51,10 @@ from .solver import (
     ToolFailure,
     UnknownTool,
     solver_identity,
+    unattributed_failure,
 )
 from .store import Store
-from .taxonomy import Outcome, outcome_for_provider
+from .taxonomy import ErrorKind, Outcome, outcome_for_provider
 
 
 class ProvenanceMismatch(RuntimeError):
@@ -246,6 +248,21 @@ class _CaseRunner:
         return rec
 
     def run(self, case: Case) -> dict[str, Any]:
+        """Run one case. The returned record is always canonically serialisable: a value
+        that cannot be sealed (NaN cost, a non-JSON score) becomes a HARNESS_ERROR for this
+        case instead of aborting the whole run at seal time."""
+        rec = self._run(case)
+        try:
+            canonical_bytes(rec)
+        except (CanonicalizationError, TypeError) as exc:
+            return self.not_attempted(
+                case,
+                Outcome.HARNESS_ERROR,
+                {"stage": "record", "message": f"case record not serialisable: {exc}"[:500]},
+            )
+        return rec
+
+    def _run(self, case: Case) -> dict[str, Any]:
         if case.case_id in self.excluded:
             return self.not_attempted(case, Outcome.EXCLUDED, None, self.excluded[case.case_id])
         if case.invalid_reason:
@@ -339,13 +356,22 @@ class _CaseRunner:
                 {"stage": "solver", "message": f"{type(exc).__name__}: {exc}"[:500]},
             )
         else:
-            unrecovered = ctx.unrecovered_model_error()
-            if unrecovered is not None:
-                outcome = outcome_for_provider(unrecovered)
+            unattributed = unattributed_failure(ctx.steps)
+            if unattributed is not None and unattributed[0] == "model":
+                kind = ErrorKind(unattributed[1])
+                outcome = outcome_for_provider(kind)
                 error = {
                     "stage": "model",
-                    "kind": unrecovered.value,
+                    "kind": kind.value,
                     "message": "final model call failed; solver output not attributable",
+                }
+            elif unattributed is not None:
+                outcome = Outcome.TOOL_ERROR
+                error = {
+                    "stage": "tool",
+                    "tool": unattributed[1],
+                    "message": "tool failed and no model call followed; "
+                    "solver output not attributable to the model",
                 }
             elif not isinstance(output, str):
                 outcome, error = (
@@ -369,6 +395,17 @@ class _CaseRunner:
                 else:
                     score = sc.to_dict()
                     outcome = Outcome.PASS if sc.passed else Outcome.TASK_FAILURE
+                    failed_tools = sorted(
+                        {
+                            str(st.get("tool"))
+                            for st in ctx.steps
+                            if st.get("type") == "tool_call" and st.get("status") != "OK"
+                        }
+                    )
+                    if failed_tools:
+                        # The model answered after a tool failure: its verdict stands (working
+                        # around a broken tool is agent behaviour), but it is marked.
+                        rec["degraded"] = [f"tool:{t}" for t in failed_tools]
                     if sc.label is not None:
                         rec["expected_label"] = (
                             str(case.expected).casefold() if case.expected is not None else None
@@ -451,6 +488,14 @@ def run_eval(
 
     run_id = new_run_id()
     started = utcnow()
+    log.event(
+        "run_started",
+        run_id=run_id,
+        dataset=ds.dataset_id,
+        revision=ds.revision,
+        provider=identity.key,
+        cases=len(selected),
+    )
     store.begin_run(
         run_id,
         {
@@ -517,6 +562,17 @@ def run_eval(
             for fut in done:
                 cid = pending.pop(fut)
                 records[cid] = fut.result()
+                if records[cid]["outcome"] not in ("PASS", "TASK_FAILURE"):
+                    err = records[cid].get("error") or {}
+                    log.event(
+                        "case_not_scored",
+                        logging.DEBUG,
+                        run_id=run_id,
+                        case_id=cid,
+                        outcome=records[cid]["outcome"],
+                        stage=err.get("stage"),
+                        kind=err.get("kind"),
+                    )
                 if progress:
                     progress(len(records), len(cases))
                 nxt = next(it, None)
@@ -628,4 +684,12 @@ def run_eval(
             "refusing to store a receipt that fails verification: " + "; ".join(check.problems[:5])
         )
     store.finish_run(receipt)
+    log.event(
+        "run_finished",
+        run_id=run_id,
+        status=receipt["status"],
+        requested=receipt["aggregate"]["requested"],
+        counts={k: v for k, v in receipt["aggregate"]["counts"].items() if v},
+        wall_ms=receipt["timing"]["wall_ms"],
+    )
     return receipt

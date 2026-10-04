@@ -12,6 +12,7 @@ provider:
   kind: python
   function: support_models:keyword_router
   model: keyword-router-v1
+  pinned: true                 # deterministic code: exact reproduction may be claimed
 scorer:
   kind: classification
   labels: [billing, technical, account, shipping]

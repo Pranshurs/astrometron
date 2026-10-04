@@ -17,14 +17,16 @@ who can rewrite every file *and* the index can forge history. Signing is on the 
 | Dataset tampering in the store (editing a snapshot) | MITIGATED | Objects are content-addressed and re-hashed on read; the snapshot's revision is recomputed. |
 | **Result deletion** (dropping failed rows) | MITIGATED | Accounting identity re-derived from records; selection digest; selection re-derived from the snapshot; index-bound receipt digest (selfcheck A1–A5). |
 | Inflated headline number | MITIGATED | Aggregate recomputed from per-case records on every verification (A6). |
+| Cherry-picked exclusions | MITIGATED (routing) / visible (reports) | Every exclusion needs a reason, and the denominator names it. The router rejects evidence with exclusions above `max_excluded_fraction` (default 0) (R5). Comparisons with different exclusions are PARTIAL. |
 | **Scorer manipulation** (changing scorer code or params) | MITIGATED | Scorer identity includes a code digest and a Python function digest; `reproduce` reports INPUT_MISMATCH; `compare` reports PARTIALLY_COMPARABLE (C2, C3). Helper modules imported by the scorer are covered only by git commit/dirty: **PARTIAL** for that sub-case. |
 | **Judge substitution** | MITIGATED | Judge identity and prompt digest in the scorer identity; comparability warning (C1). |
 | Judge failure hidden as a score of 0 | MITIGATED | JUDGE_ERROR; verifier requires parsed judge evidence on judge-scored verdicts (J1, J2). |
-| **Provider / model drift** | PARTIAL | `served_model` recorded and substitution warned (D2); python providers pinned by source digest; router rejects revision drift (R1). Hosted models behind a stable name can change silently, and EvalLedger only sees what the provider reports. |
+| **Provider / model drift** | PARTIAL | `served_model` recorded and substitution warned (D2), and reproduce compares served models; the endpoint is part of provider identity, so evidence from one deployment is not used for another (R6); python providers are pinned only on request; the router rejects revision drift (R1). Hosted models behind a stable name can change silently, and EvalLedger only sees what the provider reports. |
 | Model identity edited in a receipt | MITIGATED | Receipt digest + index digest (D1); reproduction refused. |
 | **Stale evidence** used for routing | MITIGATED | Age gate, revision-drift gate, ROUTING_EVIDENCE_STALE (R1). |
 | Stale receipt (config/data changed afterwards) | MITIGATED | `verify` → STALE (H1, H2). |
 | **Manifest tampering**, partial (file only) | MITIGATED | Receipt digest, then the index digest if the attacker reseals the file (A3, B3). |
+| Index-only tampering (editing `index.sqlite` columns such as task, model, pass rate) | MITIGATED | Every indexed column is re-derived from the receipt in `verify_run`. The router and `compare` use only fully verified runs (A7, C4). |
 | Manifest tampering with full write access to the store and index | OUT OF SCOPE (V1) | Needs signatures or an external transparency log. |
 | **Corrupted local store** | MITIGATED | Objects re-hashed on read; foreign or newer SQLite schema refused; RUNNING runs never treated as evidence (H3); atomic writes with fsync. |
 | **Malicious evaluation case** (e.g. a huge input, or a case designed to crash the harness) | PARTIAL | A crash becomes a recorded HARNESS_ERROR or TIMEOUT, never a silent drop. No resource limits beyond `timeout_s`. A timed-out thread cannot be killed and keeps running in the background. |

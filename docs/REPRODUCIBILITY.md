@@ -19,7 +19,10 @@ evalledger reproduce RUN_ID --no-execute   # only re-identify controlled inputs
 4. **Notes the environment**: Python version, implementation and machine.
 5. **Re-executes** with the same config and seed, stored as a new run with
    `reproduces: <original>`.
-6. **Compares** `inputs_digest`, and every case's `(outcome, output_digest)`.
+6. **Compares** `inputs_digest`, the models the provider reported serving, and every
+   case's `(outcome, output_digest)`. With `--repeats N` it re-runs N times and every run
+   must agree. One agreeing re-run is weak evidence of determinism, and the report says
+   so.
 
 ## Verdicts
 
@@ -29,6 +32,7 @@ evalledger reproduce RUN_ID --no-execute   # only re-identify controlled inputs
 | `NOT_EXACTLY_REPRODUCIBLE` | The provider's model revision is not pinned. EvalLedger prints `EXACT REPRODUCTION NOT POSSIBLE: provider model revision is not externally pinned`, still re-runs every controlled component, and reports agreement. |
 | `INPUT_MISMATCH` | A controlled component changed. Each change is listed, for example `scorer changed (function_digest)`. |
 | `DIVERGED` | Inputs identical and pinned, but outcomes differ: hidden non-determinism or an undeclared dependency. The differing cases are listed, flagged when every difference involves infra errors. |
+| `NO_SCORED_CASES` | Every re-run matched, but the original scored no case (e.g. all outages): there is no model behaviour to reproduce. |
 | `REFUSED` | The original receipt does not verify. |
 | `VERIFIED_ONLY` | `--no-execute` and no mismatches. |
 
@@ -37,7 +41,7 @@ evalledger reproduce RUN_ID --no-execute   # only re-identify controlled inputs
 | Provider | Pinned when |
 |---|---|
 | `mock` | Always. Behaviour is a pure function of its options, seed and case id. |
-| `python` | Its source can be read. The revision is the function's source digest. |
+| `python` | The config says `pinned: true` and its source can be read. The revision is the function's source digest. The default is unpinned, because the digest pins code, not behaviour. |
 | `openai-compat` | Only when the config supplies `revision` (e.g. a GGUF file digest, a dated snapshot name you trust) **and** `pinned: true`. Hosted model names are mutable, so the default is unpinned. |
 
 Note that `served_model` is recorded on every response. If the provider reports a

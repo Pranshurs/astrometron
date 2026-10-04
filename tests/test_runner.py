@@ -209,3 +209,15 @@ def test_secrets_rejected(data_file: Path) -> None:
 
     with pytest.raises(ConfigError, match="literal credentials"):
         make_config(data_file, provider={"api_key": "sk-123"})
+
+
+def test_recovered_tool_failure_is_marked_degraded(store: Store, data_file: Path) -> None:
+    tools = [{"name": "broken", "version": "0.3", "function": "helpers_mod:broken_tool"}]
+    r = run_eval(
+        make_config(
+            data_file, tools=tools, solver={"function": "helpers_mod:recovering_tool_solver"}
+        ),
+        store,
+    )
+    assert all(c.get("degraded") == ["tool:broken"] for c in r["cases"])
+    assert r["aggregate"]["scored_after_tool_failure"] == 20

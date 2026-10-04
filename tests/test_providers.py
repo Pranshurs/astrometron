@@ -109,7 +109,7 @@ def test_success_and_usage(server: str) -> None:
         ((429, "rate limited"), ErrorKind.INFRA),
         ((401, "bad key"), ErrorKind.INFRA),
         ((400, '{"error": "context_length_exceeded"}'), ErrorKind.MODEL),
-        ("garbage", ErrorKind.MODEL),
+        ("garbage", ErrorKind.INFRA),
         ("filter", ErrorKind.MODEL),
     ],
 )

@@ -129,7 +129,7 @@ class RegexMatch(Scorer):
         return Score(hit is not None, 1.0 if hit else 0.0)
 
 
-_NUM = re.compile(r"[-+]?(?:\d+\.?\d*|\.\d+)(?:[eE][-+]?\d+)?")
+_NUM = re.compile(r"[-+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][-+]?[0-9]+)?", re.ASCII)
 
 
 class NumericTolerance(Scorer):
@@ -148,10 +148,11 @@ class NumericTolerance(Scorer):
         if self.params.get("extract") == "first":
             m = _NUM.search(text)
             text = m.group(0) if m else ""
-        try:
-            got = float(text)
-        except ValueError:
+        # Strict: plain decimal/scientific notation only (float() also accepts "1_0",
+        # "inf", "nan" and non-ASCII digits, none of which is a numeric answer here).
+        if not _NUM.fullmatch(text):
             return Score(False, 0.0, detail="answer is not a number")
+        got = float(text)
         if not math.isfinite(got):
             return Score(False, 0.0, detail="answer is not finite")
         ok = math.isclose(

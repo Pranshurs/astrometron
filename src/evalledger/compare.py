@@ -27,6 +27,9 @@ from typing import Any
 
 from .canonical import digest
 from .receipt import verify_receipt
+from .taxonomy import SCORED
+
+_SCORED = {o.value for o in SCORED}
 
 STRONG = "STRONGLY_COMPARABLE"
 PARTIAL = "PARTIALLY_COMPARABLE"
@@ -34,7 +37,7 @@ NOT = "NOT_DIRECTLY_COMPARABLE"
 
 _TREATMENT: dict[str, Callable[[Mapping[str, Any]], Any]] = {
     "model": lambda r: {
-        k: r["provider"]["identity"].get(k) for k in ("provider", "model", "revision")
+        k: r["provider"]["identity"].get(k) for k in ("provider", "model", "revision", "endpoint")
     },
     "request params": lambda r: r["provider"]["params"],
     "prompt": lambda r: r["prompt"]["digest"],
@@ -65,10 +68,11 @@ def comparability(a: Mapping[str, Any], b: Mapping[str, Any]) -> Comparability:
             return Comparability(NOT, [f"receipt {name} fails verification: {v.problems[0]}"])
         if r.get("status") != "COMPLETE":
             warnings.append(f"run {name} is {r.get('status')}: interrupted run")
+            reasons.append(f"run {name} is {r.get('status')} (interrupted)")
     da, db = a["dataset"], b["dataset"]
     if da["id"] != db["id"]:
         return Comparability(NOT, [f"different datasets: {da['id']} vs {db['id']}"])
-    label = STRONG
+    label = PARTIAL if reasons else STRONG
     if da["revision"] != db["revision"]:
         label = PARTIAL
         reasons.append("dataset revision changed")
@@ -165,50 +169,59 @@ def compare(a: Mapping[str, Any], b: Mapping[str, Any]) -> dict[str, Any]:
         out["comparability"] = NOT
         out["reasons"] = [*comp.reasons, "no shared, unchanged, non-excluded cases"]
         return out
-    improved, regressed, same_pass, same_fail = [], [], 0, 0
+    # Statistics compare model verdicts only: a case enters the paired test when both
+    # runs scored it. An outage or a cancelled case is not a regression of the model.
     transitions: Counter[str] = Counter()
     new_infra: list[str] = []
     infra = {"INFRA_ERROR", "MODEL_ERROR", "TIMEOUT"}
+    both_scored: list[str] = []
+    not_scored: Counter[str] = Counter()
     for cid in paired:
         oa, ob = ca[cid]["outcome"], cb[cid]["outcome"]
         if oa != ob:
             transitions[f"{oa} -> {ob}"] += 1
-        if oa != "PASS" and ob == "PASS":
-            improved.append(cid)
-        elif oa == "PASS" and ob != "PASS":
-            regressed.append(cid)
-        elif oa == "PASS":
-            same_pass += 1
-        else:
-            same_fail += 1
         if ob in infra and oa not in infra:
             new_infra.append(cid)
-    n = len(paired)
-    pa_paired = sum(ca[c]["outcome"] == "PASS" for c in paired) / n
-    pb_paired = sum(cb[c]["outcome"] == "PASS" for c in paired) / n
+        if oa in _SCORED and ob in _SCORED:
+            both_scored.append(cid)
+        else:
+            not_scored["A" if oa not in _SCORED else "B" if ob not in _SCORED else "?"] += 1
+            if oa not in _SCORED and ob not in _SCORED:
+                not_scored["both"] += 1
+    improved = [c for c in both_scored if ca[c]["outcome"] != "PASS" == cb[c]["outcome"]]
+    regressed = [c for c in both_scored if ca[c]["outcome"] == "PASS" != cb[c]["outcome"]]
+    same_pass = sum(ca[c]["outcome"] == cb[c]["outcome"] == "PASS" for c in both_scored)
+    same_fail = len(both_scored) - len(improved) - len(regressed) - same_pass
+    n = len(both_scored)
+    pa_paired = sum(ca[c]["outcome"] == "PASS" for c in both_scored) / n if n else None
+    pb_paired = sum(cb[c]["outcome"] == "PASS" for c in both_scored) / n if n else None
+    ci = _paired_ci(len(improved), len(regressed), n)
     out["paired"] = {
+        "basis": "cases present in both runs, unchanged rows, not excluded, scored in both",
         "cases": n,
+        "shared_unchanged": len(paired),
+        "not_scored_in_both": len(paired) - n,
         "only_in_a": len(set(ca) - set(cb)),
         "only_in_b": len(set(cb) - set(ca)),
         "row_changed": len(changed_rows),
-        "pass_rate_a": round(pa_paired, 6),
-        "pass_rate_b": round(pb_paired, 6),
-        "delta_pp": round((pb_paired - pa_paired) * 100, 3),
-        "delta_ci95_pp": [round(x * 100, 3) for x in ci]
-        if (ci := _paired_ci(len(improved), len(regressed), n))
-        else None,
+        "pass_rate_a": None if pa_paired is None else round(pa_paired, 6),
+        "pass_rate_b": None if pb_paired is None else round(pb_paired, 6),
+        "delta_pp": None
+        if pa_paired is None or pb_paired is None
+        else round((pb_paired - pa_paired) * 100, 3),
+        "delta_ci95_pp": [round(x * 100, 3) for x in ci] if ci else None,
         "mcnemar_p": _mcnemar_exact(len(improved), len(regressed)),
         "improved": len(improved),
         "regressed": len(regressed),
         "unchanged_pass": same_pass,
-        "unchanged_not_pass": same_fail,
+        "unchanged_fail": same_fail,
         "improved_cases": improved[:50],
         "regressed_cases": regressed[:50],
-        "improved_from_errors": sum(ca[c]["outcome"] != "TASK_FAILURE" for c in improved),
-        "regressed_to_errors": sum(cb[c]["outcome"] != "TASK_FAILURE" for c in regressed),
         "new_infra_failures": len(new_infra),
         "transitions": dict(sorted(transitions.items())),
     }
+    if n == 0:
+        out["warnings"].append("no case was scored in both runs: no paired statistics")
     la, lb = a["aggregate"]["latency_ms"]["model"], b["aggregate"]["latency_ms"]["model"]
     out["latency_ms_model"] = {q: {"a": la.get(q), "b": lb.get(q)} for q in ("p50", "p95", "p99")}
     ka, kb = a["aggregate"]["cost"], b["aggregate"]["cost"]
@@ -224,3 +237,21 @@ def compare(a: Mapping[str, Any], b: Mapping[str, Any]) -> dict[str, Any]:
         k: [fa.get(k), fb.get(k)] for k in sorted(set(fa) | set(fb)) if fa.get(k) != fb.get(k)
     }
     return out
+
+
+def compare_runs(store: Any, run_a: str, run_b: str) -> dict[str, Any]:
+    """Compare two stored runs. Each must pass full store verification (receipt digest,
+    index binding, dataset and selection binding); a receipt that is only self-consistent
+    is not evidence."""
+    for name, rid in (("A", run_a), ("B", run_b)):
+        v = store.verify_run(rid)
+        if not v.ok:
+            return {
+                "run_a": run_a,
+                "run_b": run_b,
+                "comparability": NOT,
+                "reasons": [f"run {name} ({rid}) fails store verification: {v.problems[0]}"],
+                "changed_treatments": [],
+                "warnings": [],
+            }
+    return compare(store.load_receipt(run_a), store.load_receipt(run_b))

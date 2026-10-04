@@ -13,4 +13,4 @@ objective: cheapest
 candidates:
   - {kind: mock, model: mock-v1, accuracy: 0.86, infra_error_rate: 0.06, model_error_rate: 0.02}
   - {kind: mock, model: mock-large, accuracy: 0.97, infra_error_rate: 0.01, model_error_rate: 0.0, latency_ms: 3}
-  - {kind: python, function: "support_models:keyword_router", model: keyword-router-v1}
+  - {kind: python, function: "support_models:keyword_router", model: keyword-router-v1, pinned: true}

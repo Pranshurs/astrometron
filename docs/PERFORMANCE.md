@@ -17,27 +17,28 @@ infra error rate.
 
 | Measurement | n | p50 | p95 | p99 |
 |---|---|---|---|---|
-| Ledger overhead per case (total − model − tool − scoring), zero-latency provider | 1000 | 0.018 ms | 0.022 ms | 0.043 ms |
-| Model latency, zero-latency mock | 1000 | 0.004 ms | 0.008 ms | 0.009 ms |
-| Model latency, 5 ms provider (concurrency 8) | 1000 | 6.312 ms | 6.948 ms | 8.126 ms |
-| Ledger overhead, same run | 1000 | 0.075 ms | 0.166 ms | 0.270 ms |
+| Ledger overhead per case (total − model − tool − scoring), zero-latency provider | 1000 | 0.018 ms | 0.022 ms | 0.042 ms |
+| Model latency, 5 ms provider (concurrency 8) | 1000 | 6.300 ms | 6.756 ms | 7.405 ms |
+| Ledger overhead, same run | 1000 | 0.077 ms | 0.138 ms | 0.267 ms |
 
 Under concurrency the per-case overhead rises (GIL contention between worker threads),
 but it stays roughly 1–2% of even a 5 ms model call. Real provider calls take hundreds
-of milliseconds.
+of milliseconds. The per-case figure is measured inside the case. The check that each
+finished record can be canonically serialised runs after the timing is recorded, so it
+appears only in the throughput numbers below.
 
 ## Per run (1,000-case receipt)
 
 | Operation | n | p50 | p95 | p99 |
 |---|---|---|---|---|
-| Aggregate computation | 30 | 2.27 ms | 2.63 ms | 2.77 ms |
-| Receipt generation (`seal`: three digests over the full receipt) | 30 | 18.3 ms | 18.6 ms | 18.7 ms |
-| Receipt self-verification | 30 | 22.0 ms | 22.8 ms | 23.3 ms |
-| Full store verification (receipt + index + dataset + selection) | 10 | 41.9 ms | 46.4 ms | 46.4 ms |
-| Comparison of two receipts | 30 | 44.6 ms | 45.8 ms | 49.4 ms |
-| Dataset load + digest (JSONL) | 30 | 15.2 ms | 15.6 ms | 19.9 ms |
-| Dataset snapshot verification | 30 | 12.5 ms | 12.9 ms | 16.8 ms |
-| Persistence (atomic write + fsync + index transaction) | 30 | 30.5 ms | 31.2 ms | 31.3 ms |
+| Aggregate computation | 30 | 2.55 ms | 2.61 ms | 2.80 ms |
+| Receipt generation (`seal`: three digests over the full receipt) | 30 | 17.6 ms | 17.9 ms | 18.0 ms |
+| Receipt self-verification | 30 | 21.5 ms | 21.8 ms | 22.5 ms |
+| Full store verification (receipt + index columns + dataset + selection) | 10 | 41.1 ms | 44.7 ms | 44.7 ms |
+| Comparison of two receipts | 30 | 44.6 ms | 46.8 ms | 48.8 ms |
+| Dataset load + digest (JSONL) | 30 | 15.4 ms | 25.8 ms | 51.7 ms |
+| Dataset snapshot verification | 30 | 12.3 ms | 13.0 ms | 16.5 ms |
+| Persistence (atomic write + fsync + index transaction) | 30 | 30.4 ms | 32.5 ms | 33.1 ms |
 
 Receipt size: about 1.55 MB per 1,000 cases with outputs and trajectories recorded.
 
@@ -45,13 +46,18 @@ Receipt size: about 1.55 MB per 1,000 cases with outputs and trajectories record
 
 | Concurrency | Runs | Median wall time | Cases/s |
 |---|---|---|---|
-| 1 | 5 | 0.159 s | 6,305 |
-| 4 | 5 | 0.151 s | 6,644 |
+| 1 | 5 | 0.178 s | 5,619 |
+| 4 | 5 | 0.175 s | 5,704 |
 
-This includes dataset loading, snapshot registration, execution, sealing,
-self-verification and durable persistence. With a zero-latency provider the work is
-CPU-bound in one interpreter, so concurrency barely helps. With real providers,
-concurrency hides network latency.
+This includes dataset loading, snapshot registration, execution, per-case record
+validation, sealing, self-verification and durable persistence. With a zero-latency
+provider the work is CPU-bound in one interpreter, so concurrency barely helps. With
+real providers, concurrency hides network latency.
+
+Before the review fixes the measured figure was about 6,300 cases/s. Per-case record
+validation (finding HIGH-3: one non-finite value must not abort a whole run) costs about
+11% of throughput when the provider takes zero time. With any real provider the cost is
+negligible.
 
 ## Caveats
 

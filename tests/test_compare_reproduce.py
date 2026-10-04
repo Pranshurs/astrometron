@@ -26,7 +26,7 @@ def test_strong_comparison_model_change_only(store: Store, data_file: Path) -> N
     assert res["comparability"] == STRONG
     p = res["paired"]
     assert p["cases"] == 20
-    assert p["improved"] + p["regressed"] + p["unchanged_pass"] + p["unchanged_not_pass"] == 20
+    assert p["improved"] + p["regressed"] + p["unchanged_pass"] + p["unchanged_fail"] == 20
     assert "model" in res["changed_treatments"]
     assert not any("single-factor" in w for w in res["warnings"])
 
@@ -127,7 +127,7 @@ def test_hidden_nondeterminism_diverges(store: Store, data_file: Path, tmp_path:
     )
     cfg = make_config(
         data_file,
-        provider={"kind": "python", "function": "flaky:f"},
+        provider={"kind": "python", "function": "flaky:f", "pinned": True},
         python_path=[str(tmp_path)],
         run={"concurrency": 1},
     )

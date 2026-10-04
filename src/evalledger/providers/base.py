@@ -18,6 +18,8 @@ class ProviderIdentity:
     model: str
     revision: str | None = None
     pinned: bool = False
+    #: Where the model is served (credential-free URL), for network providers.
+    endpoint: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -25,6 +27,7 @@ class ProviderIdentity:
             "model": self.model,
             "revision": self.revision,
             "pinned": self.pinned,
+            "endpoint": self.endpoint,
         }
 
     @property

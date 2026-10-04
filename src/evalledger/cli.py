@@ -84,6 +84,11 @@ def render_summary(r: dict[str, Any], store: Store | None = None) -> str:
             f"  conditional:    {_pct(ps['value'])} of {ps['denominator']} scored "
             "(PASS / (PASS+TASK_FAILURE)) - not the headline number"
         )
+    if agg.get("scored_after_tool_failure"):
+        lines.append(
+            f"  note:           {agg['scored_after_tool_failure']} scored case(s) answered after "
+            "a tool failure (marked 'degraded')"
+        )
     lat = agg["latency_ms"]
     lines.append(
         f"Model latency:    p50 {_ms(lat['model']['p50'])}  p95 {_ms(lat['model']['p95'])}  "
@@ -183,12 +188,10 @@ def cmd_verify(args: argparse.Namespace) -> int:
 
 
 def cmd_compare(args: argparse.Namespace) -> int:
-    from .compare import compare
+    from .compare import compare_runs
 
     store = _store(args)
-    a = store.load_receipt(store.resolve(args.run_a))
-    b = store.load_receipt(store.resolve(args.run_b))
-    res = compare(a, b)
+    res = compare_runs(store, store.resolve(args.run_a), store.resolve(args.run_b))
     if args.json:
         _dump(res)
         return 0
@@ -207,14 +210,19 @@ def cmd_compare(args: argparse.Namespace) -> int:
         p = res["paired"]
         ci = p["delta_ci95_pp"]
         print(
-            f"\nPaired on {p['cases']} identical cases: {p['delta_pp']:+.1f} pp"
+            f"\nPaired on {p['cases']} cases scored in both runs"
+            + (f": {p['delta_pp']:+.1f} pp" if p["delta_pp"] is not None else "")
             + (f"  95% CI [{ci[0]:+.1f}, {ci[1]:+.1f}]" if ci else "")
             + (f"  McNemar p={p['mcnemar_p']}" if p["mcnemar_p"] is not None else "")
         )
         print(f"\nImproved cases:     {p['improved']:>5}")
         print(f"Regressed cases:    {p['regressed']:>5}")
         print(f"Unchanged PASS:     {p['unchanged_pass']:>5}")
-        print(f"Unchanged non-PASS: {p['unchanged_not_pass']:>5}")
+        print(f"Unchanged FAIL:     {p['unchanged_fail']:>5}")
+        print(
+            f"Not scored in both: {p['not_scored_in_both']:>5}  (errors/cancellations: "
+            "not model verdicts, excluded from the paired test)"
+        )
         print(f"New infra failures: {p['new_infra_failures']:>5}")
         if p["row_changed"] or p["only_in_a"] or p["only_in_b"]:
             print(
@@ -242,7 +250,9 @@ def cmd_reproduce(args: argparse.Namespace) -> int:
     from .reproduce import NOT_EXACT, REPRODUCED, VERIFIED_ONLY, reproduce
 
     store = _store(args)
-    rep = reproduce(store, store.resolve(args.run), execute=not args.no_execute)
+    rep = reproduce(
+        store, store.resolve(args.run), execute=not args.no_execute, repeats=args.repeats
+    )
     if args.json:
         _dump(rep.to_dict())
     else:
@@ -385,6 +395,7 @@ def build_parser() -> argparse.ArgumentParser:
     s = add("reproduce", "re-execute a run from its receipt and check it")
     s.add_argument("run")
     s.add_argument("--no-execute", action="store_true", help="check inputs only")
+    s.add_argument("--repeats", type=int, default=1, help="re-run N times; all must agree")
     s.set_defaults(fn=cmd_reproduce)
     s = add("runs", "list runs")
     s.add_argument("--task")
