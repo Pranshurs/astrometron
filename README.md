@@ -73,19 +73,43 @@ the denominator.
 
 ```bash
 evalledger reproduce latest
-#   Verdict: REPRODUCED              (pinned, deterministic: every case identical)
+#   Verdict: REPRODUCED              (pinned, deterministic: every case identical; --repeats N)
 #   Verdict: NOT_EXACTLY_REPRODUCIBLE  EXACT REPRODUCTION NOT POSSIBLE: provider model
 #            revision is not externally pinned.   (re-runs everything it controls anyway)
 #   Verdict: INPUT_MISMATCH          scorer changed (function_digest)
 
 evalledger compare RUN_A RUN_B
-#   Comparability: PARTIALLY_COMPARABLE
-#     - judge model changed
-#   79.0% -> 95.0%   +16.0 percentage points
-#   Paired on 200 identical cases: +16.0 pp  95% CI [+9.4, +22.6]  McNemar p=6e-06
-#   Improved cases: 41  (16 were errors in A, not model verdicts)
-#   WARNING: judge model also changed: not a clean model-only comparison
+```
 
+Real output from the bundled demo (mock model vs keyword classifier):
+
+```
+Comparability: STRONGLY_COMPARABLE
+
+PASS RATE (each on its full denominator 200 / 200)
+79.0% -> 95.0%   +16.0 percentage points
+
+Paired on 184 cases scored in both runs: +8.7 pp  95% CI [+2.6, +14.8]  McNemar p=0.009041
+
+Improved cases:        25
+Regressed cases:        9
+Not scored in both:    16  (errors/cancellations: not model verdicts, excluded from the paired test)
+
+Outcome transitions:
+  INFRA_ERROR -> PASS                    12
+  MODEL_ERROR -> PASS                     4
+  PASS -> TASK_FAILURE                    9
+  TASK_FAILURE -> PASS                   25
+```
+
+The headline moved 16 points. On the 184 cases that both runs actually scored, the
+model-versus-model difference is +8.7 points. Much of the rest comes from 16 cases where
+run A's provider failed: they count against A's headline, but they are kept out of the
+paired test because an outage is not a model verdict. If the judge, scorer or
+dataset had changed too, the label would be `PARTIALLY_COMPARABLE` with the reason
+listed (e.g. `judge model also changed: not a clean model-only comparison`).
+
+```bash
 evalledger verify RUN_ID      # VALID | STALE (config/data changed since) | INVALID (+ why)
 ```
 
