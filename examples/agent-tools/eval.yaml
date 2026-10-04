@@ -1,0 +1,23 @@
+# Tool-using agent: every model call and tool call is recorded as trajectory evidence.
+name: order-status-agent
+task: tool-use
+dataset:
+  path: orders.jsonl
+  id: order-status-v1
+python_path: ["."]
+prompt:
+  template: "{input}"
+provider:
+  kind: python
+  function: agent_demo:planner
+  model: planner-v1
+solver: tool_loop
+tools:
+  - name: order_status
+    version: "1.2.0"
+    function: agent_demo:order_status
+scorer:
+  kind: normalized
+run:
+  seed: 0
+  concurrency: 4
