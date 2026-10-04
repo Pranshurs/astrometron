@@ -1,0 +1,112 @@
+{
+  "hardware": {
+    "cpu": "Apple M1",
+    "cores": "8",
+    "memory_gib": 16.0,
+    "os": "macOS-27.0.1-arm64-arm-64bit",
+    "python": "3.12.13",
+    "implementation": "CPython",
+    "evalledger": "0.1.0"
+  },
+  "cases": 1000,
+  "reps": 30,
+  "throughput_zero_latency_provider": {
+    "concurrency_1": {
+      "runs": 5,
+      "median_wall_s": 0.1586,
+      "cases_per_s": 6304.7
+    },
+    "concurrency_4": {
+      "runs": 5,
+      "median_wall_s": 0.1505,
+      "cases_per_s": 6643.9
+    }
+  },
+  "per_case_ledger_overhead": {
+    "n": 1000,
+    "p50_ms": 0.018,
+    "p95_ms": 0.022,
+    "p99_ms": 0.043,
+    "max_ms": 0.316
+  },
+  "per_case_model_latency_zero_latency_mock": {
+    "n": 1000,
+    "p50_ms": 0.004,
+    "p95_ms": 0.008,
+    "p99_ms": 0.009,
+    "max_ms": 0.099
+  },
+  "with_5ms_provider": {
+    "model_latency": {
+      "n": 1000,
+      "p50_ms": 6.312,
+      "p95_ms": 6.948,
+      "p99_ms": 8.126,
+      "max_ms": 9.231
+    },
+    "ledger_overhead": {
+      "n": 1000,
+      "p50_ms": 0.075,
+      "p95_ms": 0.166,
+      "p99_ms": 0.27,
+      "max_ms": 2.245
+    }
+  },
+  "aggregate_computation": {
+    "n": 30,
+    "p50_ms": 2.2668,
+    "p95_ms": 2.6334,
+    "p99_ms": 2.7704,
+    "max_ms": 2.7704
+  },
+  "receipt_generation_seal": {
+    "n": 30,
+    "p50_ms": 18.3434,
+    "p95_ms": 18.5937,
+    "p99_ms": 18.714,
+    "max_ms": 18.714
+  },
+  "receipt_verification": {
+    "n": 30,
+    "p50_ms": 22.0092,
+    "p95_ms": 22.7779,
+    "p99_ms": 23.3296,
+    "max_ms": 23.3296
+  },
+  "store_full_verify_run": {
+    "n": 10,
+    "p50_ms": 41.9106,
+    "p95_ms": 46.3558,
+    "p99_ms": 46.3558,
+    "max_ms": 46.3558
+  },
+  "comparison": {
+    "n": 30,
+    "p50_ms": 44.5649,
+    "p95_ms": 45.8187,
+    "p99_ms": 49.4458,
+    "max_ms": 49.4458
+  },
+  "dataset_load_and_digest": {
+    "n": 30,
+    "p50_ms": 15.207,
+    "p95_ms": 15.6091,
+    "p99_ms": 19.8848,
+    "max_ms": 19.8848
+  },
+  "dataset_snapshot_verify": {
+    "n": 30,
+    "p50_ms": 12.5075,
+    "p95_ms": 12.938,
+    "p99_ms": 16.7969,
+    "max_ms": 16.7969
+  },
+  "persistence_finish_run": {
+    "n": 30,
+    "p50_ms": 30.4617,
+    "p95_ms": 31.2471,
+    "p99_ms": 31.2908,
+    "max_ms": 31.2908
+  },
+  "receipt_size_bytes": 1554303
+}
