@@ -1,0 +1,302 @@
+{
+  "results": [
+    {
+      "id": "M01",
+      "invariant": "pass rate denominator excludes failed cases",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[E1] - AssertionError: E1 attack..."
+    },
+    {
+      "id": "M02",
+      "invariant": "runner drops error rows before aggregation",
+      "status": "KILLED",
+      "killed_by": "tests/test_cli.py::test_end_to_end - assert (1 == 0)"
+    },
+    {
+      "id": "M03",
+      "invariant": "verifier ignores selected cases with no record",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[A4] - AssertionError: A4 attack..."
+    },
+    {
+      "id": "M04",
+      "invariant": "verifier ignores requested != accounted in aggregate",
+      "status": "EQUIVALENT",
+      "killed_by": ""
+    },
+    {
+      "id": "M05",
+      "invariant": "verifier ignores duplicate case records",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[A5] - AssertionError: A5 attack..."
+    },
+    {
+      "id": "M06",
+      "invariant": "verifier trusts stored aggregate",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[A6] - AssertionError: A6 attack..."
+    },
+    {
+      "id": "M07",
+      "invariant": "exclusion accepted without a reason",
+      "status": "KILLED",
+      "killed_by": "tests/test_receipt.py::test_exclusion_without_reason_rejected_by_config"
+    },
+    {
+      "id": "M08",
+      "invariant": "pinned dataset revision not enforced",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[B1] - AssertionError: B1 attack..."
+    },
+    {
+      "id": "M09",
+      "invariant": "snapshot accepted with wrong revision",
+      "status": "KILLED",
+      "killed_by": "tests/test_dataset.py::test_snapshot_roundtrip_and_tamper_detection - ..."
+    },
+    {
+      "id": "M10",
+      "invariant": "corrupted store object accepted",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_object_corruption_detected - Fai..."
+    },
+    {
+      "id": "M11",
+      "invariant": "dataset revision depends on row order",
+      "status": "KILLED",
+      "killed_by": "tests/test_dataset.py::test_reordering_keeps_revision_and_case_identity"
+    },
+    {
+      "id": "M12",
+      "invariant": "row digest ignores expected output",
+      "status": "KILLED",
+      "killed_by": "tests/test_cli.py::test_end_to_end - assert (1 == 0)"
+    },
+    {
+      "id": "M13",
+      "invariant": "receipt case row digest not bound to snapshot",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[B3] - AssertionError: B3 attack..."
+    },
+    {
+      "id": "M14",
+      "invariant": "selected_case_ids not bound to selected_digest",
+      "status": "KILLED",
+      "killed_by": "tests/test_receipt.py::test_selection_digest_binds_selected_ids - asse..."
+    },
+    {
+      "id": "M15",
+      "invariant": "selection not re-derived from snapshot",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[A3] - AssertionError: A3 attack..."
+    },
+    {
+      "id": "M16",
+      "invariant": "receipt digest not checked",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[D1] - AssertionError: D1 attack..."
+    },
+    {
+      "id": "M17",
+      "invariant": "index digest binding not checked",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_resealed_forgery_caught_by_index"
+    },
+    {
+      "id": "M18",
+      "invariant": "crashed (RUNNING) run accepted",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_crashed_run_is_never_complete - ..."
+    },
+    {
+      "id": "M19",
+      "invariant": "inputs digest ignores scorer",
+      "status": "KILLED",
+      "killed_by": "tests/test_receipt.py::test_inputs_digest_identifies_the_experiment - ..."
+    },
+    {
+      "id": "M20",
+      "invariant": "harness crash becomes TASK_FAILURE",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[E1] - AssertionError: E1 contro..."
+    },
+    {
+      "id": "M21",
+      "invariant": "judge failure becomes TASK_FAILURE",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[J1] - AssertionError: J1 contro..."
+    },
+    {
+      "id": "M22",
+      "invariant": "provider infra failure treated as PASS",
+      "status": "KILLED",
+      "killed_by": "tests/test_cli.py::test_end_to_end - assert (1 == 0)"
+    },
+    {
+      "id": "M23",
+      "invariant": "provider failure swallowed by solver is not attributed",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[F2] - AssertionError: F2 contro..."
+    },
+    {
+      "id": "M24",
+      "invariant": "verifier accepts verdict after failed final model call",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[F3] - AssertionError: F3 attack..."
+    },
+    {
+      "id": "M25",
+      "invariant": "verifier accepts error outcomes without error record",
+      "status": "KILLED",
+      "killed_by": "tests/test_receipt.py::test_error_outcome_needs_error_record - assert ..."
+    },
+    {
+      "id": "M26",
+      "invariant": "verifier accepts judge verdict without parsed judge evidence",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[J2] - AssertionError: J2 attack..."
+    },
+    {
+      "id": "M27",
+      "invariant": "judge accepts more than one verdict line",
+      "status": "KILLED",
+      "killed_by": "tests/test_runner.py::test_judge_injection_cannot_force_pass - Asserti..."
+    },
+    {
+      "id": "M48",
+      "invariant": "scorer crash becomes TASK_FAILURE",
+      "status": "KILLED",
+      "killed_by": "tests/test_runner.py::test_scorer_crash_is_harness_error - evalledger...."
+    },
+    {
+      "id": "M28",
+      "invariant": "tool failure becomes HARNESS_ERROR",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[G1] - AssertionError: G1 attack..."
+    },
+    {
+      "id": "M29",
+      "invariant": "tool version not recorded in trajectory",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[G1] - AssertionError: G1 attack..."
+    },
+    {
+      "id": "M30",
+      "invariant": "reproduce ignores scorer changes",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[C3] - AssertionError: C3 attack..."
+    },
+    {
+      "id": "M31",
+      "invariant": "reproduce ignores provider revision changes",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[D3] - AssertionError: D3 attack..."
+    },
+    {
+      "id": "M32",
+      "invariant": "unpinned provider claimed as exactly reproduced",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_unpinned_provider_is_not_exact"
+    },
+    {
+      "id": "M33",
+      "invariant": "divergent rerun reported as reproduced",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_hidden_nondeterminism_diverges"
+    },
+    {
+      "id": "M34",
+      "invariant": "stale config accepted",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_staleness - assert False"
+    },
+    {
+      "id": "M35",
+      "invariant": "reproduction from an invalid receipt not refused",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_tampered_receipt_refused - Asser..."
+    },
+    {
+      "id": "M36",
+      "invariant": "scorer change ignored by comparability",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_scorer_change_is_partial - Asser..."
+    },
+    {
+      "id": "M37",
+      "invariant": "judge change ignored by comparability",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_judge_change_is_partial_and_flagged"
+    },
+    {
+      "id": "M38",
+      "invariant": "different datasets compared directly",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_different_dataset_not_comparable"
+    },
+    {
+      "id": "M39",
+      "invariant": "changed rows paired as identical",
+      "status": "KILLED",
+      "killed_by": "tests/test_compare_reproduce.py::test_dataset_revision_change_pairs_only_unchanged_rows"
+    },
+    {
+      "id": "M40",
+      "invariant": "router uses unverified evidence",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R3] - AssertionError: R3 attack..."
+    },
+    {
+      "id": "M41",
+      "invariant": "router ignores evidence age",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R1] - AssertionError: R1 attack..."
+    },
+    {
+      "id": "M42",
+      "invariant": "router ignores model revision drift",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R1] - AssertionError: R1 attack..."
+    },
+    {
+      "id": "M43",
+      "invariant": "router treats unknown cost as within limit",
+      "status": "KILLED",
+      "killed_by": "tests/test_integrity.py::test_scenario[R4] - AssertionError: R4 contro..."
+    },
+    {
+      "id": "M44",
+      "invariant": "router ignores incomparable evidence",
+      "status": "KILLED",
+      "killed_by": "tests/test_router.py::test_incomparable_evidence - AssertionError: ass..."
+    },
+    {
+      "id": "M45",
+      "invariant": "router quality floor uses point estimate under wilson_lower",
+      "status": "KILLED",
+      "killed_by": "tests/test_router.py::test_wilson_bound_is_stricter_than_point - Asser..."
+    },
+    {
+      "id": "M46",
+      "invariant": "cost invented when usage tokens are missing",
+      "status": "KILLED",
+      "killed_by": "tests/test_receipt.py::test_cost_never_invented - AssertionError: asse..."
+    },
+    {
+      "id": "M47",
+      "invariant": "literal credentials accepted in config",
+      "status": "KILLED",
+      "killed_by": "tests/test_cli.py::test_config_errors_exit_2 - assert 'literal credent..."
+    }
+  ],
+  "counts": {
+    "KILLED": 47,
+    "SURVIVED": 0,
+    "INVALID": 0,
+    "EQUIVALENT": 1
+  },
+  "post_restore_baseline": true,
+  "equivalent_justifications": {
+    "M04": "verify_receipt's summary check 'accounted != requested' is implied by the per-record checks it follows: accounted == len(records with a valid outcome) and requested == len(selected). Any inequality requires a missing record, an extra record, a duplicate record, or an unknown outcome - each already adds its own problem. Removing it never changes Verification.ok, only drops a redundant summary line. Kept as a readable summary for humans."
+  }
+}

@@ -232,7 +232,7 @@ def a4(env: Env) -> Result:
     forged["cases"] = [c for c in forged["cases"] if c["outcome"] != "INFRA_ERROR"]
     forged["aggregate"] = aggregate(forged["cases"], forged["dataset"]["selected_case_ids"], [])
     v = verify_receipt(seal(forged))
-    rule = "requested != accounted"
+    rule = "selected case(s) have no record"
     return Result("A4", "", rule, honest, _has(v.problems, rule), "; ".join(v.problems[:2]))
 
 
