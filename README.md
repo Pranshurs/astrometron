@@ -23,8 +23,9 @@ Without Astrometron                    With Astrometron
 ## Five minutes, no API account
 
 ```bash
-pip install astrometron         # not yet on PyPI: pip install -e . from a clone
-cd examples/support-routing
+pip install astrometron                                  # https://pypi.org/project/astrometron/
+git clone https://github.com/Pranshurs/astrometron.git  # for the bundled example data
+cd astrometron/examples/support-routing
 astrometron run eval.yaml
 ```
 
