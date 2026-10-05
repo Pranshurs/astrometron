@@ -166,7 +166,7 @@
       "id": "M48",
       "invariant": "scorer crash becomes TASK_FAILURE",
       "status": "KILLED",
-      "killed_by": "tests/test_runner.py::test_scorer_crash_is_harness_error - evalledger...."
+      "killed_by": "tests/test_runner.py::test_scorer_crash_is_harness_error - astrometron..."
     },
     {
       "id": "M28",
