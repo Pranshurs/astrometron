@@ -4,9 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from conftest import ROWS, make_config, write_jsonl
-from evalledger.compare import NOT, PARTIAL, STRONG, compare
-from evalledger.reproduce import (
+from astrometron.compare import NOT, PARTIAL, STRONG, compare
+from astrometron.reproduce import (
     DIVERGED,
     INPUT_MISMATCH,
     NOT_EXACT,
@@ -15,8 +14,9 @@ from evalledger.reproduce import (
     reproduce,
     staleness,
 )
-from evalledger.runner import run_eval
-from evalledger.store import SCHEMA_VERSION, Store, StoreError, migrate
+from astrometron.runner import run_eval
+from astrometron.store import SCHEMA_VERSION, Store, StoreError, migrate
+from conftest import ROWS, make_config, write_jsonl
 
 
 def test_strong_comparison_model_change_only(store: Store, data_file: Path) -> None:
@@ -147,7 +147,7 @@ def test_tampered_receipt_refused(store: Store, data_file: Path) -> None:
 
 
 def test_resealed_forgery_caught_by_index(store: Store, data_file: Path) -> None:
-    from evalledger.receipt import seal
+    from astrometron.receipt import seal
 
     a = run_eval(make_config(data_file), store)
     path = store.root / "runs" / a["run_id"] / "receipt.json"
@@ -166,7 +166,7 @@ def test_staleness(store: Store, tmp_path: Path) -> None:
         "dataset: {path: d.jsonl, id: ds}\nprovider: {kind: mock, model: m}\n"
         "scorer: {kind: exact}\n"
     )
-    from evalledger.config import load_config
+    from astrometron.config import load_config
 
     r = run_eval(load_config(cfg_path), store)
     assert staleness(r) == []
@@ -219,9 +219,9 @@ def test_object_corruption_detected(store: Store) -> None:
 
 
 def test_v1_store_migrates_to_v2_preserving_runs(tmp_path: Path, data_file: Path) -> None:
-    from evalledger.store import _migrate_0_to_1
+    from astrometron.store import _migrate_0_to_1
 
-    root = tmp_path / ".evalledger"
+    root = tmp_path / ".astrometron"
     root.mkdir()
     con = sqlite3.connect(root / "index.sqlite")
     _migrate_0_to_1(con)

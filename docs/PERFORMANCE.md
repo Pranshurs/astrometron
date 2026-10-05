@@ -1,6 +1,6 @@
 # Performance
 
-How much does the ledger cost, separately from the model? These are measured numbers
+How much does Astrometron itself cost, separately from the model? These are measured numbers
 from `bench/bench_overhead.py`. They are not tuned and not cherry-picked. The raw output
 is in [`eval/results/bench.json`](../eval/results/bench.json). Re-run it on your
 machine:
@@ -10,16 +10,16 @@ python bench/bench_overhead.py --cases 1000 --reps 30
 ```
 
 **Machine:** Apple M1, 8 cores, 16 GiB RAM, macOS 27 (Darwin 27.0.0, arm64), CPython
-3.12.13, EvalLedger 0.1.0. Dataset: 1,000 cases. The mock provider has a 2% injected
+3.12.13, Astrometron 0.1.0. Dataset: 1,000 cases. The mock provider has a 2% injected
 infra error rate.
 
 ## Per case
 
 | Measurement | n | p50 | p95 | p99 |
 |---|---|---|---|---|
-| Ledger overhead per case (total − model − tool − scoring), zero-latency provider | 1000 | 0.018 ms | 0.022 ms | 0.042 ms |
+| Astrometron overhead per case (total − model − tool − scoring), zero-latency provider | 1000 | 0.018 ms | 0.022 ms | 0.042 ms |
 | Model latency, 5 ms provider (concurrency 8) | 1000 | 6.300 ms | 6.756 ms | 7.405 ms |
-| Ledger overhead, same run | 1000 | 0.077 ms | 0.138 ms | 0.267 ms |
+| Astrometron overhead, same run | 1000 | 0.077 ms | 0.138 ms | 0.267 ms |
 
 Under concurrency the per-case overhead rises (GIL contention between worker threads),
 but it stays roughly 1–2% of even a 5 ms model call. Real provider calls take hundreds

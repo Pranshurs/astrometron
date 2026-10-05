@@ -1,6 +1,6 @@
 import pytest
 
-from evalledger.integrity import SCENARIOS, run_suite
+from astrometron.integrity import SCENARIOS, run_suite
 
 
 @pytest.mark.parametrize("sid", [s[0] for s in SCENARIOS])

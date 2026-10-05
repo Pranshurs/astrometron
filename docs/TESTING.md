@@ -1,6 +1,6 @@
-# How EvalLedger tests itself
+# How Astrometron tests itself
 
-EvalLedger is evidence tooling, so "the tests pass" is not enough. Every critical claim
+Astrometron is evidence tooling, so "the tests pass" is not enough. Every critical claim
 has a check that has been shown to fail when the claim is broken.
 
 ## 1. Unit and integration tests (`pytest`)
@@ -9,9 +9,9 @@ Datasets, digests, every failure class end to end, the provider error mapping ag
 local stub HTTP server, compare, reproduce, store migrations, the router's gates, and
 the CLI end to end.
 
-## 2. Adversarial integrity suite (`evalledger selfcheck`)
+## 2. Adversarial integrity suite (`astrometron selfcheck`)
 
-41 scenarios in `src/evalledger/integrity.py`, run as part of `pytest`. Each scenario
+41 scenarios in `src/astrometron/integrity.py`, run as part of `pytest`. Each scenario
 has two arms:
 
 - **an honest control arm** that must verify cleanly, so a verifier that rejects
@@ -57,7 +57,7 @@ History, kept in the git log:
 
 - **First run (48 mutants):** 37 killed, 7 survived, 3 invalid. The survivors were closed
   with behavioural tests, not by weakening mutants.
-- **After the independent review:** 16 mutants were added for the repaired rules. Three
+- **After pre-publication review:** 16 mutants were added for the repaired rules. Three
   survived at first:
   - one guarded a router check that the repaired `verify_run` made unreachable, so the
     dead check was removed;

@@ -1,12 +1,7 @@
-# Independent review log
+# Pre-publication review
 
-## Review 1: cold review, 2026-10-04
-
-**Reviewer.** A separately spawned agent with no prior project context. It had read-only
-access to the repository and wrote scratch reproductions outside it. It never edited the
-code: repairs were made by the maintainer only.
-
-**Scope.** Commit `33d8cf6`, covering:
+During pre-publication review of commit `c6f60f3` (2026-10-04), 0 BLOCKER, 3 HIGH,
+6 MEDIUM and several LOW findings were raised against:
 
 - denominator invariants;
 - dataset immutability;
@@ -16,9 +11,10 @@ code: repairs were made by the maintainer only.
 - comparison semantics;
 - routing evidence.
 
-**Result.** 0 BLOCKER, 3 HIGH, 6 MEDIUM and several LOW findings. Every HIGH and MEDIUM
-finding was reproduced independently by the maintainer, by re-running the reviewer's
-scripts, before any repair.
+Every HIGH and MEDIUM finding was reproduced with a script before repair, fixed, and
+re-checked after repair. The reproduction scripts are kept in
+[`eval/review/`](../eval/review/) and can be re-run against any checkout (see its
+README).
 
 | # | Severity | Finding | Disposition | Guard |
 |---|---|---|---|---|
@@ -39,16 +35,15 @@ scripts, before any repair.
 | L5 | LOW (reasoned) | Run-id prefix lookup used an unescaped `LIKE`. | **Fixed.** Literal prefix comparison. | test |
 | – | Note | STRONGLY_COMPARABLE ignores prompt/params/solver differences. | **By design**: these are treatments. They are listed in `changed_treatments` and warned about when more than one changed. | – |
 
-**Bounded re-check by the same reviewer (HEAD `b36b10e`).** The reviewer re-ran its
-original reproductions plus a new script (`r8.py`, which the maintainer re-ran
-independently with matching output).
+**Re-check after repair (commit `7db6014`).** The original reproduction scripts were
+re-run, plus one more (`r8_post_repair.py`) covering the repaired boundaries.
 
-- Every original HIGH and MEDIUM finding is RESOLVED.
-- No CLAIM-INVALIDATING counterexample was found.
-- Items marked UNVERIFIED in the re-check (8b, L3–L5) are covered by the maintainer's
-  tests and mutants M60 and M64.
+- Every HIGH and MEDIUM finding behaves as fixed.
+- No counterexample to a repaired rule was found.
+- Items not re-run by the scripts (8b, L3–L5) are covered by tests and mutants M60 and
+  M64.
 
-Two NEW-OBSERVATIONS, handled as a separate change:
+Two further observations from the re-check, handled as a separate change (commit `46437fe`):
 
 - The router ignored tool-`degraded` cases. Evidence now reports
   `scored_after_tool_failure`, and the optional `max_degraded_fraction` gate rejects it
@@ -58,11 +53,10 @@ Two NEW-OBSERVATIONS, handled as a separate change:
   (HARNESS + JUDGE + INVALID_CASE) / requested must be ≤ `max_evaluation_error_rate`,
   default 0, so it fails closed (scenario R7, mutant M66).
 
-**Re-verification after repair.**
+**Verification after all repairs.**
 
-- The reviewer's scripts were re-run against the repaired code, and every finding now
-  behaves as fixed.
-- Test suite: 147 tests pass on Python 3.10, 3.12 and 3.13.
+- The reproduction scripts in `eval/review/` behave as fixed.
+- Test suite: 147 tests pass on Python 3.10, 3.11, 3.12 and 3.13.
 - `selfcheck`: 41/41 scenarios.
 - Mutation gate: 66 mutants, 65 killed, 0 survived, 0 invalid, 1 equivalent (justified).
 - Benchmark: re-run because the hot path changed. Throughput fell from about 6,300 to

@@ -46,7 +46,7 @@ _TREATMENT: dict[str, Callable[[Mapping[str, Any]], Any]] = {
     "seed": lambda r: r["run"]["seed"],
     "retries/timeout": lambda r: [r["run"]["retries"], r["run"]["timeout_s"]],
     "code revision": lambda r: r["code"]["git_commit"],
-    "evalledger version": lambda r: r["code"]["evalledger_version"],
+    "astrometron version": lambda r: r["code"]["astrometron_version"],
     "python": lambda r: r["environment"]["python"],
 }
 
@@ -95,7 +95,9 @@ def comparability(a: Mapping[str, Any], b: Mapping[str, Any]) -> Comparability:
         label = PARTIAL
         reasons.append("explicit exclusions differ")
     changed = [n for n, f in _TREATMENT.items() if digest(f(a)) != digest(f(b))]
-    substantive = [c for c in changed if c not in ("code revision", "evalledger version", "python")]
+    substantive = [
+        c for c in changed if c not in ("code revision", "astrometron version", "python")
+    ]
     if len(substantive) > 1:
         warnings.append(
             f"more than one treatment changed ({', '.join(substantive)}): "

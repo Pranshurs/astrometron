@@ -1,7 +1,7 @@
-"""Eval-integrity adversarial suite (``evalledger selfcheck``).
+"""Eval-integrity adversarial suite (``astrometron selfcheck``).
 
 Each scenario builds a deliberately broken evaluator, a forged receipt, or a changed
-input, and checks that EvalLedger detects it by the *specific rule* expected - not by
+input, and checks that Astrometron detects it by the *specific rule* expected - not by
 any error at all. Every scenario also runs an honest control arm that must verify
 cleanly, so a verifier that rejects everything cannot pass the suite.
 """
@@ -101,7 +101,7 @@ class Result:
 class Env:
     def __init__(self, root: Path) -> None:
         self.root = root
-        self.store = Store(root / ".evalledger")
+        self.store = Store(root / ".astrometron")
         self.data = root / "cases.jsonl"
         self.write_rows(self.rows())
 
@@ -139,7 +139,7 @@ class Env:
 
 @contextmanager
 def _env() -> Iterator[Env]:
-    d = Path(tempfile.mkdtemp(prefix="evalledger-selfcheck-"))
+    d = Path(tempfile.mkdtemp(prefix="astrometron-selfcheck-"))
     try:
         yield Env(d)
     finally:
@@ -782,7 +782,7 @@ def r4(env: Env) -> Result:
     )
 
 
-# -- scenarios added after the independent review --------------------------------
+# -- scenarios added after pre-publication review ---------------------------------
 
 
 def _cost_provider(request: Request, poison: bool) -> Any:
@@ -1037,7 +1037,7 @@ def run_suite(only: list[str] | None = None) -> list[dict[str, Any]]:
 
 
 def render(results: list[dict[str, Any]]) -> str:
-    lines = ["EVALLEDGER SELFCHECK - eval-integrity adversarial suite", ""]
+    lines = ["ASTROMETRON SELFCHECK - eval-integrity adversarial suite", ""]
     for r in results:
         mark = "PASS" if r["passed"] else "FAIL"
         lines.append(f"[{mark}] {r['id']:<3} {r['title']}")

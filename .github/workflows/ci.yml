@@ -6,6 +6,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -45,7 +46,7 @@ jobs:
       - name: unit, integration and adversarial tests
         run: pytest
       - name: adversarial integrity suite via the CLI
-        run: evalledger selfcheck
+        run: astrometron selfcheck
 
   mutation:
     runs-on: ubuntu-latest
@@ -75,9 +76,9 @@ jobs:
           python -m venv /tmp/clean
           /tmp/clean/bin/pip install dist/*.whl
           cd examples/support-routing
-          /tmp/clean/bin/evalledger --store /tmp/store run eval.yaml
-          /tmp/clean/bin/evalledger --store /tmp/store reproduce latest
-          /tmp/clean/bin/evalledger selfcheck
+          /tmp/clean/bin/astrometron --store /tmp/store run eval.yaml
+          /tmp/clean/bin/astrometron --store /tmp/store reproduce latest
+          /tmp/clean/bin/astrometron selfcheck
 
   audit:
     runs-on: ubuntu-latest

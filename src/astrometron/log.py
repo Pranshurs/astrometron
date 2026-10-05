@@ -1,6 +1,6 @@
 """Structured logging: one JSON object per line on stderr.
 
-Off by default (level WARNING). Enable with ``EVALLEDGER_LOG=info`` or ``debug``.
+Off by default (level WARNING). Enable with ``ASTROMETRON_LOG=info`` or ``debug``.
 Logs carry ids, counts, outcomes and error *classes*. They never carry prompts, model
 outputs, dataset contents or credentials. Any field whose name looks like a credential
 is redacted, and so is any string value that looks like a bearer token or API key.
@@ -16,7 +16,7 @@ import sys
 from collections.abc import Mapping
 from typing import Any
 
-_LOGGER_NAME = "evalledger"
+_LOGGER_NAME = "astrometron"
 _SECRET_KEY = re.compile(r"(api[_-]?key|authorization|password|secret|token|bearer)", re.I)
 _SECRET_VALUE = re.compile(r"\b(sk-[A-Za-z0-9_-]{8,}|Bearer\s+\S+|[A-Za-z0-9_-]{32,})\b")
 REDACTED = "[REDACTED]"
@@ -68,7 +68,7 @@ def get_logger() -> logging.Logger:
         handler.setFormatter(JSONFormatter())
         logger.addHandler(handler)
         logger.propagate = False
-        level = os.environ.get("EVALLEDGER_LOG", "warning").upper()
+        level = os.environ.get("ASTROMETRON_LOG", "warning").upper()
         logger.setLevel(getattr(logging, level, logging.WARNING))
     return logger
 

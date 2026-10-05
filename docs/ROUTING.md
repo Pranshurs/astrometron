@@ -4,7 +4,7 @@ The router picks a model for a task class from stored, verified evaluation recei
 It never asks a model which model is best, and every decision cites its evidence.
 
 ```
-evalledger route route.yaml
+astrometron route route.yaml
 ```
 
 ```yaml
@@ -57,7 +57,7 @@ Decision status:
 
 - `SELECTED`: the best eligible candidate by the objective. Ties break by quality, then
   latency, then name.
-- `NO_ELIGIBLE_MODEL`: nothing passes. EvalLedger never picks something anyway.
+- `NO_ELIGIBLE_MODEL`: nothing passes. Astrometron never picks something anyway.
 - `ROUTING_EVIDENCE_STALE`: nothing passes, and at least one candidate failed *only* on
   freshness (age or revision drift). Re-evaluate before routing.
 

@@ -1,13 +1,13 @@
-# EvalLedger
+# Astrometron
 
-**Reproducible evidence for AI evaluations and model routing.**
+**Reproducible measurement and evidence for AI systems.**
 
 Your benchmark says Model A scores 87%.
-EvalLedger records exactly which dataset, model, prompt, tools, scorer, judge, failures
+Astrometron records exactly which dataset, model, prompt, tools, scorer, judge, failures
 and environment produced that number, and it keeps every failed case in the accounting.
 
 ```
-Without EvalLedger                     With EvalLedger
+Without Astrometron                    With Astrometron
 
 "92% success"                          PASS             840
                                        TASK_FAILURE      80
@@ -18,21 +18,21 @@ Without EvalLedger                     With EvalLedger
                                        84.0% of requested cases
 ```
 
-**No eval number without an evidence ledger.**
+**No evaluation number without its evidence.**
 
 ## Five minutes, no API account
 
 ```bash
-pip install evalledger          # not yet on PyPI: pip install -e . from a clone
+pip install astrometron         # not yet on PyPI: pip install -e . from a clone
 cd examples/support-routing
-evalledger run eval.yaml
+astrometron run eval.yaml
 ```
 
 ```
-EVALLEDGER RUN
+ASTROMETRON RUN
 
-Run:              01M42SDWFSBTNWWXG6BRG1MHJ3
-Dataset:          support-routing-v3  (sha256:bf50b4dd7453…)
+Run:              01M450Y35HWND01M5ZY0B0D157
+Dataset:          support-routing-v3  (sha256:0b00d24e02aa…)
 Cases:            200
 Provider:         mock/mock-v1
 Scorer:           classification-v1
@@ -51,7 +51,7 @@ Pass rate:        79.0% of 200 (requested)  95% CI [72.8%, 84.1%]
 Cost:             $0.003727 total, $0.00001864/case (price table)
 
 Receipt:
-.evalledger/runs/01M42SDWFSBTNWWXG6BRG1MHJ3/receipt.json
+.astrometron/runs/01M450Y35HWND01M5ZY0B0D157/receipt.json
 ```
 
 The provider outage (12 cases) is `INFRA_ERROR`, not a model failure, and it stays in
@@ -66,19 +66,19 @@ the denominator.
 | Which prompt, tools, scorer and judge? | `prompt.digest`, `tools[].version/code_digest`, `scorer.code_digest`, `judge` |
 | Which environment and seeds? | `environment`, `code.git_commit/git_dirty`, `run.seed` |
 | Which failures were included, and which were infrastructure? | `aggregate.counts` across 11 typed outcomes |
-| Did any failed row silently disappear? | `evalledger verify`: requested = accounted, re-derived |
-| Can it be reproduced? | `evalledger reproduce RUN_ID`, with an honest verdict |
+| Did any failed row silently disappear? | `astrometron verify`: requested = accounted, re-derived |
+| Can it be reproduced? | `astrometron reproduce RUN_ID`, with an honest verdict |
 
 ## Reproduce, compare, verify
 
 ```bash
-evalledger reproduce latest
+astrometron reproduce latest
 #   Verdict: REPRODUCED              (pinned, deterministic: every case identical; --repeats N)
 #   Verdict: NOT_EXACTLY_REPRODUCIBLE  EXACT REPRODUCTION NOT POSSIBLE: provider model
 #            revision is not externally pinned.   (re-runs everything it controls anyway)
 #   Verdict: INPUT_MISMATCH          scorer changed (function_digest)
 
-evalledger compare RUN_A RUN_B
+astrometron compare RUN_A RUN_B
 ```
 
 Real output from the bundled demo (mock model vs keyword classifier):
@@ -110,12 +110,12 @@ dataset had changed too, the label would be `PARTIALLY_COMPARABLE` with the reas
 listed (e.g. `judge model also changed: not a clean model-only comparison`).
 
 ```bash
-evalledger verify RUN_ID      # VALID | STALE (config/data changed since) | INVALID (+ why)
+astrometron verify RUN_ID      # VALID | STALE (config/data changed since) | INVALID (+ why)
 ```
 
 ## Does it actually catch things?
 
-EvalLedger evaluates itself. `evalledger selfcheck` runs 40 adversarial scenarios. Each
+Astrometron evaluates itself. `astrometron selfcheck` runs 40 adversarial scenarios. Each
 one pairs an honest control (which must verify) with a deliberately broken evaluator or
 forged receipt (which must be caught by a named rule):
 
@@ -163,14 +163,14 @@ in the case's trajectory. See [examples/agent-tools](examples/agent-tools).
 
 ## Routing, but only on evidence
 
-Once there is trustworthy evidence, `evalledger route policy.yaml` picks a model:
+Once there is trustworthy evidence, `astrometron route policy.yaml` picks a model:
 
 ```
 selected: python/keyword-router-v1
 
 evidence:
-  run 01M42SRTT2RETHRE7TC75QB0Y2  (0.0 days old)
-  receipt sha256:6987f2b7…
+  run 01M450Y3QBABGKD9KJ8FREP8HR  (0.0 days old)
+  receipt sha256:07610bd5…
   success: 95.0%  (95% CI 91.0-97.3%, wilson_lower used)
   cost: $0.000000/case
   cases: 200
@@ -206,7 +206,7 @@ The router fails closed:
 
 ## Scope
 
-EvalLedger is not:
+Astrometron is not:
 
 - an observability dashboard;
 - a prompt manager;

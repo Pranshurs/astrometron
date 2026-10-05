@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from evalledger.canonical import CanonicalizationError, canonical_bytes, digest, is_digest
+from astrometron.canonical import CanonicalizationError, canonical_bytes, digest, is_digest
 
 
 def test_key_order_does_not_matter() -> None:

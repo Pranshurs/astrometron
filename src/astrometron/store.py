@@ -1,6 +1,6 @@
 """Local evidence store.
 
-Layout (default root ``./.evalledger``)::
+Layout (default root ``./.astrometron``)::
 
     objects/sha256/<2 hex>/<62 hex>.json   immutable content-addressed artifacts
                                            (dataset snapshots, routing decisions)
@@ -34,7 +34,7 @@ from .dataset import Dataset, DatasetError
 from .receipt import STATUS_COMPLETE, Verification, verify_receipt
 
 SCHEMA_VERSION = 2
-DEFAULT_ROOT = ".evalledger"
+DEFAULT_ROOT = ".astrometron"
 
 
 class StoreError(RuntimeError):
@@ -140,7 +140,7 @@ def migrate(con: sqlite3.Connection, target: int = SCHEMA_VERSION) -> int:
     current = schema_version(con)
     if current > target:
         raise StoreError(
-            f"store schema v{current} is newer than this EvalLedger (v{target}); upgrade it"
+            f"store schema v{current} is newer than this Astrometron (v{target}); upgrade it"
         )
     while current < target:
         with con:

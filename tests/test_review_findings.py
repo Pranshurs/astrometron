@@ -1,4 +1,4 @@
-"""Regression tests for findings of the independent cold review (2026-10-04)."""
+"""Regression tests for findings of the pre-publication review (2026-10-04)."""
 
 import threading
 from datetime import datetime, timedelta, timezone
@@ -7,13 +7,13 @@ from pathlib import Path
 
 import pytest
 
+from astrometron.dataset import Case
+from astrometron.receipt import seal, verify_receipt
+from astrometron.router import route, validate_policy
+from astrometron.runner import run_eval
+from astrometron.scorers import NumericTolerance
+from astrometron.store import Store, StoreError
 from conftest import ROWS, make_config
-from evalledger.dataset import Case
-from evalledger.receipt import seal, verify_receipt
-from evalledger.router import route, validate_policy
-from evalledger.runner import run_eval
-from evalledger.scorers import NumericTolerance
-from evalledger.store import Store, StoreError
 
 
 def test_router_requires_receipt_task_to_match(store: Store, data_file: Path) -> None:
@@ -115,7 +115,7 @@ def test_tool_failure_without_later_model_call_is_rejected_by_verifier(
 
 
 def test_reproduce_repeats(store: Store, data_file: Path) -> None:
-    from evalledger.reproduce import REPRODUCED, reproduce
+    from astrometron.reproduce import REPRODUCED, reproduce
 
     r = run_eval(make_config(data_file, provider={"accuracy": 0.6}), store)
     rep = reproduce(store, r["run_id"], repeats=3)
@@ -127,7 +127,7 @@ def test_rows_fixture_unchanged() -> None:
 
 
 def test_python_provider_unpinned_unless_declared() -> None:
-    from evalledger.providers import PythonProvider
+    from astrometron.providers import PythonProvider
 
     spec = {"function": "helpers_mod:echo_expected"}
     assert not PythonProvider(spec).identity().pinned
@@ -138,11 +138,11 @@ def test_reproduce_flags_served_model_change(store: Store, data_file: Path, tmp_
     import importlib
     import sys
 
-    from evalledger.reproduce import INPUT_MISMATCH, reproduce
+    from astrometron.reproduce import INPUT_MISMATCH, reproduce
 
     mod = tmp_path / "served.py"
     mod.write_text(
-        "from evalledger.providers import Response\nSERVED = ['v1']\n"
+        "from astrometron.providers import Response\nSERVED = ['v1']\n"
         "def f(req):\n    return Response(text='x', served_model=SERVED[0])\n"
     )
     cfg = make_config(

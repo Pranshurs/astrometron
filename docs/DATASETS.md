@@ -6,7 +6,7 @@ An evaluation dataset is a versioned input, not a mutable list of examples.
 
 ```
 revision = sha256( canonical_json({
-    "schema":     "evalledger.dataset/v1",
+    "schema":     "astrometron.dataset/v1",
     "dataset_id": <id>,
     "rows":       [[case_id, row_digest], ...]  # sorted by case_id
 }))
@@ -41,7 +41,7 @@ Datasets with zero cases or duplicate case ids are refused.
   reserved names left unused by a `fields` remapping, such as
   `dataset.fields: {id: ticket_id, input: text, expected: label}`.
 - **CSV**: same keys as columns. Values are strings. `tags` is `;`-separated.
-- **Python**: `evalledger.dataset.load_rows("my-ds", rows)`.
+- **Python**: `astrometron.dataset.load_rows("my-ds", rows)`.
 
 A row without an input is kept as a case with `invalid_reason`. It resolves to
 `INVALID_CASE` and still counts in the denominator. The reason never includes a file
@@ -84,7 +84,7 @@ denominator becomes `requested minus N explicitly excluded`, and says so.
 ## CLI
 
 ```
-evalledger datasets list
-evalledger datasets register data.jsonl --id my-ds
-evalledger datasets verify my-ds          # snapshot integrity + has the source file changed?
+astrometron datasets list
+astrometron datasets register data.jsonl --id my-ds
+astrometron datasets verify my-ds          # snapshot integrity + has the source file changed?
 ```

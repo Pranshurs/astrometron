@@ -1,17 +1,17 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "evalledger"
+name = "astrometron"
 version = "0.1.0"
-description = "Reproducible evidence for AI evaluations and model routing."
+description = "Reproducible measurement and evidence for AI systems: provenance-bound evaluation receipts, typed failures, and evidence-backed model routing."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-authors = [{ name = "Pranshu" }]
-keywords = ["evaluation", "llm", "reproducibility", "provenance", "benchmark", "routing"]
+authors = [{ name = "Pranshu Raj" }]
+keywords = ["evaluation", "llm", "reproducibility", "provenance", "benchmark", "routing", "metrology"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -27,17 +27,24 @@ classifiers = [
 ]
 dependencies = ["PyYAML>=6.0"]
 
+[project.urls]
+Homepage = "https://github.com/Pranshurs/astrometron"
+Repository = "https://github.com/Pranshurs/astrometron"
+Issues = "https://github.com/Pranshurs/astrometron/issues"
+Changelog = "https://github.com/Pranshurs/astrometron/blob/main/CHANGELOG.md"
+Documentation = "https://github.com/Pranshurs/astrometron/tree/main/docs"
+
 [project.optional-dependencies]
 dev = ["pytest>=7", "ruff>=0.5", "mypy>=1.10", "types-PyYAML", "build", "twine"]
 
 [project.scripts]
-evalledger = "evalledger.cli:main"
+astrometron = "astrometron.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-evalledger = ["py.typed"]
+astrometron = ["py.typed"]
 
 [tool.ruff]
 line-length = 100
@@ -51,7 +58,7 @@ ignore = ["RUF012"]
 [tool.mypy]
 python_version = "3.10"
 strict = true
-files = ["src/evalledger"]
+files = ["src/astrometron"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

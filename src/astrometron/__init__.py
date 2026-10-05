@@ -1,4 +1,4 @@
-"""EvalLedger: reproducible evidence for AI evaluations and model routing."""
+"""Astrometron: reproducible measurement and evidence for AI systems."""
 
 from __future__ import annotations
 

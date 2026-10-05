@@ -4,5 +4,5 @@ recursive-include examples *.py *.yaml *.jsonl
 recursive-include tests *.py
 recursive-include tools *.py
 recursive-include bench *.py
-recursive-include eval *.json
-global-exclude __pycache__ *.py[cod] .evalledger
+recursive-include eval *.json *.py *.md
+global-exclude __pycache__ *.py[cod] .astrometron

@@ -7,8 +7,8 @@ from typing import Any
 
 import pytest
 
-from evalledger.config import EvalConfig, from_dict
-from evalledger.store import Store
+from astrometron.config import EvalConfig, from_dict
+from astrometron.store import Store
 
 HERE = Path(__file__).parent
 if str(HERE) not in sys.path:
@@ -25,7 +25,7 @@ ROWS = [{"id": f"c{i:02d}", "input": f"question {i}", "expected": f"answer {i}"}
 
 @pytest.fixture
 def store(tmp_path: Path) -> Store:
-    return Store(tmp_path / ".evalledger")
+    return Store(tmp_path / ".astrometron")
 
 
 @pytest.fixture

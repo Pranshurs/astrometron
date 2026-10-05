@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import contextlib
 
-from evalledger.providers import ProviderError, Request, Response
-from evalledger.solver import SolverContext, ToolFailure
-from evalledger.taxonomy import ErrorKind
+from astrometron.providers import ProviderError, Request, Response
+from astrometron.solver import SolverContext, ToolFailure
+from astrometron.taxonomy import ErrorKind
 
 
 def echo_expected(request: Request) -> str:

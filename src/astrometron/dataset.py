@@ -26,7 +26,7 @@ from typing import Any
 
 from .canonical import CanonicalizationError, digest, digest_bytes
 
-DATASET_SCHEMA = "evalledger.dataset/v1"
+DATASET_SCHEMA = "astrometron.dataset/v1"
 _ID_KEYS = ("case_id", "id")
 _RESERVED = {"case_id", "id", "input", "expected", "metadata", "tags", "split"}
 

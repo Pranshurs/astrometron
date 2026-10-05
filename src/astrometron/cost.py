@@ -1,7 +1,7 @@
 """Cost accounting.
 
 Cost comes from exactly one of: the provider's own usage metadata (``reported_cost_usd``),
-an explicit price table with source/update metadata, or it is ``UNKNOWN``. EvalLedger
+an explicit price table with source/update metadata, or it is ``UNKNOWN``. Astrometron
 never invents prices. The price table used is embedded in the receipt, so historical
 cost keeps the assumptions it was computed under.
 """

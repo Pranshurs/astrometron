@@ -1,6 +1,6 @@
 """Canonical serialization and content digests.
 
-Every digest in EvalLedger is ``sha256:<hex>`` over the *canonical JSON* form of a
+Every digest in Astrometron is ``sha256:<hex>`` over the *canonical JSON* form of a
 value: UTF-8, object keys sorted, no insignificant whitespace, no NaN/Infinity.
 Two values with the same canonical form are the same evidence; anything else is not.
 """

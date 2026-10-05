@@ -3,7 +3,7 @@
 ``run_eval`` guarantees that every selected case ends with exactly one typed record,
 whatever happens: provider outages, tool crashes, scorer bugs, judge failures,
 timeouts, Ctrl-C. Before a receipt is written it is re-verified by
-:func:`evalledger.receipt.verify_receipt`; a receipt that fails its own accounting is
+:func:`astrometron.receipt.verify_receipt`; a receipt that fails its own accounting is
 never stored as evidence.
 """
 
@@ -111,7 +111,7 @@ def environment() -> dict[str, Any]:
         "implementation": platform.python_implementation(),
         "platform": platform.platform(),
         "machine": platform.machine(),
-        "packages": {"evalledger": __version__, "PyYAML": ver("PyYAML")},
+        "packages": {"astrometron": __version__, "PyYAML": ver("PyYAML")},
     }
 
 
@@ -645,7 +645,7 @@ def run_eval(
             "excluded": [{"case_id": k, "reason": v} for k, v in sorted(excluded.items())],
         },
         "code": {
-            "evalledger_version": __version__,
+            "astrometron_version": __version__,
             "git_commit": git["commit"],
             "git_dirty": git["dirty"],
             "cwd": os.getcwd(),

@@ -2,7 +2,7 @@
 
 **Asset:** the meaning of an evaluation number, and the routing decisions built on it.
 
-**Trust boundary:** EvalLedger trusts the Python process it runs in and the code the
+**Trust boundary:** Astrometron trusts the Python process it runs in and the code the
 user configures (solvers, scorers, tools, providers). It does not trust the dataset
 file, model outputs, the judge's output, receipts read back from disk, or the evidence
 store's contents.
@@ -21,7 +21,7 @@ who can rewrite every file *and* the index can forge history. Signing is on the 
 | **Scorer manipulation** (changing scorer code or params) | MITIGATED | Scorer identity includes a code digest and a Python function digest; `reproduce` reports INPUT_MISMATCH; `compare` reports PARTIALLY_COMPARABLE (C2, C3). Helper modules imported by the scorer are covered only by git commit/dirty: **PARTIAL** for that sub-case. |
 | **Judge substitution** | MITIGATED | Judge identity and prompt digest in the scorer identity; comparability warning (C1). |
 | Judge failure hidden as a score of 0 | MITIGATED | JUDGE_ERROR; verifier requires parsed judge evidence on judge-scored verdicts (J1, J2). |
-| **Provider / model drift** | PARTIAL | `served_model` recorded and substitution warned (D2), and reproduce compares served models; the endpoint is part of provider identity, so evidence from one deployment is not used for another (R6); python providers are pinned only on request; the router rejects revision drift (R1). Hosted models behind a stable name can change silently, and EvalLedger only sees what the provider reports. |
+| **Provider / model drift** | PARTIAL | `served_model` recorded and substitution warned (D2), and reproduce compares served models; the endpoint is part of provider identity, so evidence from one deployment is not used for another (R6); python providers are pinned only on request; the router rejects revision drift (R1). Hosted models behind a stable name can change silently, and Astrometron only sees what the provider reports. |
 | Model identity edited in a receipt | MITIGATED | Receipt digest + index digest (D1); reproduction refused. |
 | **Stale evidence** used for routing | MITIGATED | Age gate, revision-drift gate, ROUTING_EVIDENCE_STALE (R1). |
 | Stale receipt (config/data changed afterwards) | MITIGATED | `verify` → STALE (H1, H2). |
@@ -31,7 +31,7 @@ who can rewrite every file *and* the index can forge history. Signing is on the 
 | **Corrupted local store** | MITIGATED | Objects re-hashed on read; foreign or newer SQLite schema refused; RUNNING runs never treated as evidence (H3); atomic writes with fsync. |
 | **Malicious evaluation case** (e.g. a huge input, or a case designed to crash the harness) | PARTIAL | A crash becomes a recorded HARNESS_ERROR or TIMEOUT, never a silent drop. No resource limits beyond `timeout_s`. A timed-out thread cannot be killed and keeps running in the background. |
 | **Prompt injection into judge input** | PARTIAL | The candidate answer is fenced between per-case markers; the verdict must be the last line and appear exactly once, so an echoed injected verdict becomes JUDGE_ERROR rather than PASS. A judge that obeys injected instructions and emits one clean verdict is not detectable by parsing. Use deterministic scorers where possible. |
-| **Compromised runner** (malicious solver/scorer code, or a modified EvalLedger) | OUT OF SCOPE | Configured code runs with full privileges and can write any receipt it wants. Mitigation is code review and committing eval code (`git_commit` / `git_dirty` are recorded). |
+| **Compromised runner** (malicious solver/scorer code, or a modified Astrometron) | OUT OF SCOPE | Configured code runs with full privileges and can write any receipt it wants. Mitigation is code review and committing eval code (`git_commit` / `git_dirty` are recorded). |
 | **Compromised external provider** (returns crafted outputs or false usage/cost) | PARTIAL | Outputs are evidence, not trusted; malformed responses are MODEL_ERROR; provider-reported cost is labelled `cost_basis: provider`. A provider lying consistently is indistinguishable from an honest one. |
 | Credential leakage | MITIGATED | Literal keys refused in config and routing policies; keys read from env by name only; never written to receipts or logs (tested). |
 | Sensitive data in receipts | PARTIAL | `record_outputs: false` keeps only digests of outputs. Dataset snapshots necessarily contain inputs; the store is local and should be treated as sensitive as the dataset. |

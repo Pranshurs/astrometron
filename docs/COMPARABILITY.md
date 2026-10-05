@@ -1,7 +1,7 @@
 # Comparability
 
 ```
-evalledger compare RUN_A RUN_B
+astrometron compare RUN_A RUN_B
 ```
 
 Two runs differ in *measurement* factors (what was measured, and how) and *treatment*
@@ -17,7 +17,7 @@ factors. Changed treatments are listed, and you are warned when more than one ch
 | `NOT_DIRECTLY_COMPARABLE` | Different dataset id, no shared unchanged cases, or either run fails **full store verification** (receipt digest, index binding, dataset and selection binding). A receipt that is only self-consistent is not enough. | Nothing. Headline numbers are not shown against each other. |
 
 Treatment factors: model (provider/model/revision), request params, prompt, solver,
-tools, seed, retries/timeout. Code revision, EvalLedger version and Python version are
+tools, seed, retries/timeout. Code revision, Astrometron version and Python version are
 also listed but don't trigger the single-factor warning.
 
 Warnings:

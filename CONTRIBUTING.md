@@ -1,16 +1,16 @@
 # Contributing
 
-Thanks for helping. EvalLedger is evidence tooling, so the bar is: **every claim has a
+Thanks for helping. Astrometron is evidence tooling, so the bar is: **every claim has a
 check that fails when the claim is broken.**
 
 ## Setup (≈ 5 minutes)
 
 ```bash
-git clone <repo> && cd evalledger
+git clone https://github.com/Pranshurs/astrometron.git && cd astrometron
 python3 -m venv .venv && . .venv/bin/activate      # Python 3.10+
 pip install -e ".[dev]"
 pytest                                              # unit + integration + adversarial
-evalledger selfcheck                                # the integrity suite, via the CLI
+astrometron selfcheck                                # the integrity suite, via the CLI
 ```
 
 Before sending a change:
@@ -38,10 +38,10 @@ python tools/mutation_gate.py         # if you touched receipt/runner/store/comp
 
 - Import adapter: Inspect AI `EvalLog` → EvaluationReceipt (map `sample.error` to the taxonomy).
 - Import adapter: promptfoo JSON output → EvaluationReceipt.
-- `evalledger export --mlflow` (log a receipt as run params/artifacts).
-- `evalledger show --cases` filters by outcome/tag.
+- `astrometron export --mlflow` (log a receipt as run params/artifacts).
+- `astrometron show --cases` filters by outcome/tag.
 - More scorers: F1/token overlap, JSON Schema validation.
-- `evalledger gc` for unreferenced objects in the store.
+- `astrometron gc` for unreferenced objects in the store.
 - Receipt signing (Ed25519) as an opt-in.
 
 Commits: small and coherent, with a message that says *why*.

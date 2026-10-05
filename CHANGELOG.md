@@ -1,8 +1,8 @@
 # Changelog
 
-## 0.1.0 (unreleased)
+## 0.1.0 (2026-10-05)
 
-First local release candidate. Not yet published.
+First public release.
 
 - Content-addressed datasets (JSONL, CSV, Python) with stable case identity.
 - Typed outcome taxonomy, denominator-preserving runner, sealed EvaluationReceipt v1.
@@ -13,7 +13,7 @@ First local release candidate. Not yet published.
 - Tool/agent trajectory evidence; `tool_loop` solver.
 - Evidence-backed router with fail-closed gates.
 - 41-scenario adversarial integrity suite; 66-mutant mutation gate.
-- Fixes from an independent cold review: index columns bound to receipts, store-verified
+- Fixes from pre-publication review: index columns bound to receipts, store-verified
   comparison, per-case record validation, tool-failure attribution, NO_SCORED_CASES,
   interrupted runs and unscored cases kept out of paired statistics, endpoint-aware
   identity, exclusion and default-age routing gates, order-independent invalid rows.

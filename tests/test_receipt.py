@@ -4,13 +4,13 @@ from typing import Any
 
 import pytest
 
+from astrometron.canonical import digest
+from astrometron.config import ConfigError
+from astrometron.cost import PriceTable, case_cost
+from astrometron.receipt import aggregate, percentile, seal, verify_receipt, wilson
+from astrometron.runner import run_eval
+from astrometron.store import Store
 from conftest import make_config
-from evalledger.canonical import digest
-from evalledger.config import ConfigError
-from evalledger.cost import PriceTable, case_cost
-from evalledger.receipt import aggregate, percentile, seal, verify_receipt, wilson
-from evalledger.runner import run_eval
-from evalledger.store import Store
 
 
 def reseal(r: dict[str, Any]) -> dict[str, Any]:

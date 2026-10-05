@@ -1,8 +1,8 @@
 # Reproducibility
 
 ```
-evalledger reproduce RUN_ID            # re-execute and compare
-evalledger reproduce RUN_ID --no-execute   # only re-identify controlled inputs
+astrometron reproduce RUN_ID            # re-execute and compare
+astrometron reproduce RUN_ID --no-execute   # only re-identify controlled inputs
 ```
 
 ## What reproduce does
@@ -29,7 +29,7 @@ evalledger reproduce RUN_ID --no-execute   # only re-identify controlled inputs
 | Verdict | Meaning |
 |---|---|
 | `REPRODUCED` | Controlled inputs identical, provider pinned, every case outcome and output identical. |
-| `NOT_EXACTLY_REPRODUCIBLE` | The provider's model revision is not pinned. EvalLedger prints `EXACT REPRODUCTION NOT POSSIBLE: provider model revision is not externally pinned`, still re-runs every controlled component, and reports agreement. |
+| `NOT_EXACTLY_REPRODUCIBLE` | The provider's model revision is not pinned. Astrometron prints `EXACT REPRODUCTION NOT POSSIBLE: provider model revision is not externally pinned`, still re-runs every controlled component, and reports agreement. |
 | `INPUT_MISMATCH` | A controlled component changed. Each change is listed, for example `scorer changed (function_digest)`. |
 | `DIVERGED` | Inputs identical and pinned, but outcomes differ: hidden non-determinism or an undeclared dependency. The differing cases are listed, flagged when every difference involves infra errors. |
 | `NO_SCORED_CASES` | Every re-run matched, but the original scored no case (e.g. all outages): there is no model behaviour to reproduce. |
@@ -49,7 +49,7 @@ different model than configured, the receipt carries a `MODEL SUBSTITUTION` warn
 
 ## Staleness
 
-`evalledger verify RUN` reports `STALE` when the config file or the dataset source file
+`astrometron verify RUN` reports `STALE` when the config file or the dataset source file
 changed after the receipt was generated. The receipt is still a valid record of what
 ran. It no longer describes what is on disk now.
 
@@ -58,6 +58,6 @@ ran. It no longer describes what is on disk now.
 - Code reachable from a solver, scorer or tool but outside the function's own source is
   only covered by `code.git_commit` and `git_dirty`. A change in a helper module the
   scorer imports does not change `code_digest`. Commit your eval code.
-- Hosted providers are not deterministic even at temperature 0 with a seed. EvalLedger
+- Hosted providers are not deterministic even at temperature 0 with a seed. Astrometron
   never claims otherwise.
-- Library versions other than EvalLedger and PyYAML are not recorded in V1.
+- Library versions other than Astrometron and PyYAML are not recorded in V1.

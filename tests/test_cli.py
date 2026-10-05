@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from evalledger.cli import main
+from astrometron.cli import main
 
 EXAMPLE = Path(__file__).parent.parent / "examples" / "support-routing"
 
@@ -12,7 +12,7 @@ EXAMPLE = Path(__file__).parent.parent / "examples" / "support-routing"
 @pytest.fixture
 def example(tmp_path: Path) -> Path:
     dst = tmp_path / "ex"
-    shutil.copytree(EXAMPLE, dst, ignore=shutil.ignore_patterns(".evalledger", "__pycache__"))
+    shutil.copytree(EXAMPLE, dst, ignore=shutil.ignore_patterns(".astrometron", "__pycache__"))
     return dst
 
 
@@ -22,7 +22,7 @@ def run(capsys: pytest.CaptureFixture[str], *argv: str) -> tuple[int, str]:
 
 
 def test_end_to_end(example: Path, capsys: pytest.CaptureFixture[str]) -> None:
-    st = str(example / ".evalledger")
+    st = str(example / ".astrometron")
     code, out = run(capsys, "--store", st, "run", str(example / "eval.yaml"))
     assert code == 0 and "No rows omitted." in out and "TOTAL" in out
     code, out = run(capsys, "--store", st, "run", str(example / "keyword.yaml"), "--json")
@@ -51,7 +51,7 @@ def test_end_to_end(example: Path, capsys: pytest.CaptureFixture[str]) -> None:
 def test_config_errors_exit_2(example: Path, capsys: pytest.CaptureFixture[str]) -> None:
     bad = example / "bad.yaml"
     bad.write_text(
-        "dataset: {path: x.jsonl}\nprovider: {kind: mock, api_key: sk-live}\n"
+        "dataset: {path: x.jsonl}\nprovider: {kind: mock, api_key: sk-FAKE-literal}\n"
         "scorer: {kind: exact}\n"
     )
     assert main(["--store", str(example / ".s"), "run", str(bad)]) == 2

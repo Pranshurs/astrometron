@@ -1,6 +1,6 @@
 # Architecture
 
-EvalLedger is a small library and CLI. Its one job is to make every evaluation number
+Astrometron is a small library and CLI. Its one job is to make every evaluation number
 traceable to exactly what produced it, and to refuse to use numbers that can't be traced.
 
 ```
@@ -48,8 +48,8 @@ traceable to exactly what produced it, and to refuse to use numbers that can't b
 | `compare.py` | Comparability labels, paired regression analysis. |
 | `cost.py` | Price tables with provenance; cost is provider-reported, computed from a table, or UNKNOWN. |
 | `router.py` | Evidence-backed selection; decisions stored content-addressed. |
-| `integrity.py` | `evalledger selfcheck`, the adversarial suite. |
-| `cli.py` | `evalledger` command. |
+| `integrity.py` | `astrometron selfcheck`, the adversarial suite. |
+| `cli.py` | `astrometron` command. |
 
 ## Design rules
 
@@ -73,17 +73,17 @@ traceable to exactly what produced it, and to refuse to use numbers that can't b
   then the directory is `fsync`ed.
 - The SQLite index runs in WAL mode with `synchronous=FULL`. Schema version is in the
   `meta` table. Migrations are ordered functions. A newer store refuses to open with an
-  older EvalLedger, and a foreign SQLite file is refused.
+  older Astrometron, and a foreign SQLite file is refused.
 - Run lifecycle: `begin_run` inserts `RUNNING`, then the receipt file is written, then a
   single transaction sets the final status and the receipt digest. A crash before that
   transaction leaves `RUNNING`, which is never treated as evidence.
 
 Documented semantics: a completed run's receipt survives power loss once
-`evalledger run` has returned. A run interrupted by a crash is visible as incomplete,
+`astrometron run` has returned. A run interrupted by a crash is visible as incomplete,
 never as complete.
 
 ## What is deliberately not here
 
 No tracing system, no dashboard, no prompt management, no agent framework, no remote
-registry, no hosted service. EvalLedger records evidence and checks it. See
+registry, no hosted service. Astrometron records evidence and checks it. See
 [ECOSYSTEM.md](ECOSYSTEM.md) for what to use alongside it.

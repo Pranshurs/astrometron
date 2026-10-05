@@ -22,7 +22,7 @@ from .canonical import digest
 from .solver import unattributed_failure
 from .taxonomy import NOT_ATTEMPTED, ORDER, SCORED, Outcome
 
-RECEIPT_SCHEMA = "evalledger.receipt/v1"
+RECEIPT_SCHEMA = "astrometron.receipt/v1"
 STATUS_COMPLETE = "COMPLETE"
 STATUS_INCOMPLETE = "INCOMPLETE"
 

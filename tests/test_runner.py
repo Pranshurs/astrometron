@@ -4,10 +4,10 @@ from typing import Any
 
 import pytest
 
+from astrometron.receipt import verify_receipt
+from astrometron.runner import ProvenanceMismatch, run_eval
+from astrometron.store import Store
 from conftest import ROWS, make_config, write_jsonl
-from evalledger.receipt import verify_receipt
-from evalledger.runner import ProvenanceMismatch, run_eval
-from evalledger.store import Store
 
 
 def outcomes(r: dict[str, Any]) -> Counter[str]:
@@ -205,7 +205,7 @@ def test_cost_unknown_without_prices_and_known_with(store: Store, data_file: Pat
 
 
 def test_secrets_rejected(data_file: Path) -> None:
-    from evalledger.config import ConfigError
+    from astrometron.config import ConfigError
 
     with pytest.raises(ConfigError, match="literal credentials"):
         make_config(data_file, provider={"api_key": "sk-123"})

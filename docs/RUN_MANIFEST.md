@@ -1,13 +1,13 @@
-# The EvaluationReceipt (`evalledger.receipt/v1`)
+# The EvaluationReceipt (`astrometron.receipt/v1`)
 
-Every run writes one receipt to `.evalledger/runs/<run_id>/receipt.json`. It is
-framework-neutral JSON: any tool can read it, and `evalledger verify` can check it.
+Every run writes one receipt to `.astrometron/runs/<run_id>/receipt.json`. It is
+framework-neutral JSON: any tool can read it, and `astrometron verify` can check it.
 
 ## Top-level fields
 
 | Field | Content |
 |---|---|
-| `schema` | `"evalledger.receipt/v1"` |
+| `schema` | `"astrometron.receipt/v1"` |
 | `run_id` | ULID (time-sortable). |
 | `status` | `COMPLETE` or `INCOMPLETE` (interrupted; unfinished cases are `CANCELLED`). |
 | `reproduces` | Run id this run reproduces, or null. |
@@ -15,7 +15,7 @@ framework-neutral JSON: any tool can read it, and `evalledger verify` can check 
 | `config`, `config_digest` | The validated eval config exactly as run. |
 | `config_source` | Config file path, its byte digest at run time, and the base directory. |
 | `dataset` | `id`, `revision`, `schema`, `case_count`, `provenance`, `selection` (spec + seed), `selected_case_ids`, `selected_digest`, `excluded` (`case_id` + `reason`). |
-| `code` | `evalledger_version`, `git_commit`, `git_dirty`, `cwd`. |
+| `code` | `astrometron_version`, `git_commit`, `git_dirty`, `cwd`. |
 | `provider` | `identity` {`provider`, `model`, `revision`, `pinned`}, request `params`, `served_models` (what the provider said it served). |
 | `prompt` | `digest`, `template`, `system`. |
 | `solver` | Name and code digest. |
@@ -91,7 +91,7 @@ denominator.
   no longer matches is reported as tampered, even if its internal digests were
   recomputed.
 
-## Verification (`evalledger verify RUN`)
+## Verification (`astrometron verify RUN`)
 
 `VALID`, `STALE` (the config or dataset source on disk changed after the run) or
 `INVALID`, with every problem listed. `INVALID` covers:

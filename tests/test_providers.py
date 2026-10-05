@@ -7,11 +7,11 @@ from typing import Any
 
 import pytest
 
+from astrometron.providers import Message, OpenAICompatProvider, ProviderError, Request
+from astrometron.runner import run_eval
+from astrometron.store import Store
+from astrometron.taxonomy import ErrorKind
 from conftest import make_config
-from evalledger.providers import Message, OpenAICompatProvider, ProviderError, Request
-from evalledger.runner import run_eval
-from evalledger.store import Store
-from evalledger.taxonomy import ErrorKind
 
 BEHAVIOUR: dict[str, Any] = {}
 
@@ -128,9 +128,9 @@ def test_connection_refused_is_infra() -> None:
 
 def test_api_key_from_env_only(server: str, monkeypatch: pytest.MonkeyPatch) -> None:
     BEHAVIOUR.update(mode="ok")
-    monkeypatch.setenv("TEST_KEY", "sk-test-123")
+    monkeypatch.setenv("TEST_KEY", "sk-FAKE-synthetic-test")
     provider(server, api_key_env="TEST_KEY").complete(REQ)
-    assert BEHAVIOUR["last_auth"] == "Bearer sk-test-123"
+    assert BEHAVIOUR["last_auth"] == "Bearer sk-FAKE-synthetic-test"
 
 
 def test_unpinned_by_default(server: str) -> None:

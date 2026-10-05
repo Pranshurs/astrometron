@@ -1,11 +1,11 @@
-"""Mutation gate for EvalLedger's critical invariants.
+"""Mutation gate for Astrometron's critical invariants.
 
 Each mutant breaks one invariant on purpose. The test suite must fail (kill it).
 Rules of the gate:
 
 * the unmutated baseline must pass first - a failing baseline makes every kill
   meaningless;
-* the mutated tree must be the one imported (checked via ``evalledger.__file__``);
+* the mutated tree must be the one imported (checked via ``astrometron.__file__``);
 * a mutant whose FIND text is not present exactly once is INVALID, which fails the gate
   (the rule lost its attacker), never silently skipped;
 * bytecode caching is disabled so a restored file cannot be shadowed by a stale .pyc;
@@ -39,7 +39,7 @@ class Mutant:
     replace: str
 
 
-S = "src/evalledger/"
+S = "src/astrometron/"
 MUTANTS: list[Mutant] = [
     # -- denominator / accounting -------------------------------------------------
     Mutant(
@@ -391,7 +391,7 @@ MUTANTS: list[Mutant] = [
         "    if secrets:\n",
         "    if False:\n",
     ),
-    # -- added after the independent review ----------------------------------------
+    # -- added after pre-publication review ----------------------------------------
     Mutant(
         "M49",
         "index columns not bound to the receipt",
@@ -552,7 +552,9 @@ def main() -> int:
     WORK.mkdir(parents=True)
     for d in ("src", "tests", "examples"):
         shutil.copytree(
-            ROOT / d, WORK / d, ignore=shutil.ignore_patterns("__pycache__", ".evalledger", "*.pyc")
+            ROOT / d,
+            WORK / d,
+            ignore=shutil.ignore_patterns("__pycache__", ".astrometron", "*.pyc"),
         )
     env = {
         **os.environ,
@@ -560,10 +562,10 @@ def main() -> int:
         "PYTHONDONTWRITEBYTECODE": "1",
     }
     py = sys.executable
-    probe = run([py, "-c", "import evalledger; print(evalledger.__file__)"], env)
+    probe = run([py, "-c", "import astrometron; print(astrometron.__file__)"], env)
     loaded = probe.stdout.strip()
     if not loaded.startswith(str(WORK / "src")):
-        print(f"GATE ERROR: evalledger imported from {loaded!r}, not the mutation tree")
+        print(f"GATE ERROR: astrometron imported from {loaded!r}, not the mutation tree")
         return 2
     pytest_cmd = [py, "-m", "pytest", "-x", "-q", "-p", "no:cacheprovider", "tests"]
     t0 = time.time()

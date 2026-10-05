@@ -1,4 +1,4 @@
-"""``evalledger`` command-line interface.
+"""``astrometron`` command-line interface.
 
 Exit codes: 0 ok; 1 evidence problem (invalid/stale receipt, divergence, no eligible
 model); 2 usage/config error; 130 interrupted.
@@ -25,7 +25,7 @@ from .taxonomy import ORDER
 
 
 def _store(args: argparse.Namespace) -> Store:
-    return Store(args.store or os.environ.get("EVALLEDGER_HOME") or DEFAULT_ROOT)
+    return Store(args.store or os.environ.get("ASTROMETRON_HOME") or DEFAULT_ROOT)
 
 
 def _pct(v: float | None) -> str:
@@ -48,7 +48,7 @@ def render_summary(r: dict[str, Any], store: Store | None = None) -> str:
     agg = r["aggregate"]
     ident = r["provider"]["identity"]
     lines = [
-        "EVALLEDGER RUN" + ("" if r["status"] == STATUS_COMPLETE else f"  [{r['status']}]"),
+        "ASTROMETRON RUN" + ("" if r["status"] == STATUS_COMPLETE else f"  [{r['status']}]"),
         "",
         f"Run:              {r['run_id']}",
         f"Dataset:          {r['dataset']['id']}  ({r['dataset']['revision'][:19]}…)",
@@ -95,7 +95,7 @@ def render_summary(r: dict[str, Any], store: Store | None = None) -> str:
         f"p99 {_ms(lat['model']['p99'])}"
     )
     lines.append(
-        f"Ledger overhead:  p50 {_ms(lat['ledger_overhead']['p50'])}  "
+        f"Overhead (ours):  p50 {_ms(lat['ledger_overhead']['p50'])}  "
         f"p95 {_ms(lat['ledger_overhead']['p95'])}"
     )
     cost = agg["cost"]
@@ -367,9 +367,9 @@ def cmd_selfcheck(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="evalledger", description=__doc__.splitlines()[0])
-    p.add_argument("--version", action="version", version=f"evalledger {__version__}")
-    p.add_argument("--store", help="store directory (default $EVALLEDGER_HOME or ./.evalledger)")
+    p = argparse.ArgumentParser(prog="astrometron", description=__doc__.splitlines()[0])
+    p.add_argument("--version", action="version", version=f"astrometron {__version__}")
+    p.add_argument("--store", help="store directory (default $ASTROMETRON_HOME or ./.astrometron)")
     sub = p.add_subparsers(dest="cmd", required=True)
 
     def add(name: str, help_: str) -> argparse.ArgumentParser:
@@ -430,10 +430,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         print("interrupted", file=sys.stderr)
         return 130
     except (ConfigError, DatasetError, StoreError, ProvenanceMismatch, ValueError) as exc:
-        print(f"evalledger: error: {exc}", file=sys.stderr)
+        print(f"astrometron: error: {exc}", file=sys.stderr)
         return 2
     except IntegrityError as exc:
-        print(f"evalledger: INTEGRITY ERROR: {exc}", file=sys.stderr)
+        print(f"astrometron: INTEGRITY ERROR: {exc}", file=sys.stderr)
         return 1
 
 

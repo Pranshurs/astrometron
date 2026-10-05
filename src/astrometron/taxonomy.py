@@ -16,7 +16,7 @@ INFRA_ERROR     Provider unreachable/unavailable: network, DNS, 5xx,        no
                 overload, rate limit, auth failure.
 TOOL_ERROR      A tool used by the solver failed and the solver did not     no
                 recover.
-HARNESS_ERROR   EvalLedger-side or user harness code crashed (solver bug,   no
+HARNESS_ERROR   Astrometron-side or user harness code crashed (solver bug,   no
                 scorer exception, bad template).
 JUDGE_ERROR     The model-as-judge call failed or its verdict could not     no
                 be parsed.

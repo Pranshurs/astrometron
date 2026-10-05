@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
+from astrometron.dataset import Case, Dataset, DatasetError, load_file, load_rows
 from conftest import ROWS, write_jsonl
-from evalledger.dataset import Case, Dataset, DatasetError, load_file, load_rows
 
 
 def test_reordering_keeps_revision_and_case_identity(tmp_path: Path) -> None:

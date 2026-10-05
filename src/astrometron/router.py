@@ -363,7 +363,7 @@ def route(
         ]
         status = "ROUTING_EVIDENCE_STALE" if only_stale else "NO_ELIGIBLE_MODEL"
     decision: dict[str, Any] = {
-        "schema": "evalledger.routing-decision/v1",
+        "schema": "astrometron.routing-decision/v1",
         "decision_id": new_run_id(),
         "created_at": utcnow(),
         "task": task,

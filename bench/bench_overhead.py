@@ -1,4 +1,4 @@
-"""Measure EvalLedger's own overhead, separately from provider latency.
+"""Measure Astrometron's own overhead, separately from provider latency.
 
 Writes eval/results/bench.json. Numbers are whatever this machine measures; nothing is
 tuned or filtered. Usage: python bench/bench_overhead.py [--cases 1000] [--reps 30]
@@ -18,13 +18,13 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
-from evalledger import __version__
-from evalledger.compare import compare
-from evalledger.config import from_dict
-from evalledger.dataset import Dataset, load_file
-from evalledger.receipt import aggregate, percentile, seal, verify_receipt
-from evalledger.runner import run_eval
-from evalledger.store import Store
+from astrometron import __version__
+from astrometron.compare import compare
+from astrometron.config import from_dict
+from astrometron.dataset import Dataset, load_file
+from astrometron.receipt import aggregate, percentile, seal, verify_receipt
+from astrometron.runner import run_eval
+from astrometron.store import Store
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -68,7 +68,7 @@ def hardware() -> dict[str, Any]:
         "os": platform.platform(),
         "python": platform.python_version(),
         "implementation": platform.python_implementation(),
-        "evalledger": __version__,
+        "astrometron": __version__,
     }
 
 
@@ -79,7 +79,7 @@ def main() -> int:
     ap.add_argument("--out", default=str(ROOT / "eval" / "results" / "bench.json"))
     args = ap.parse_args()
     n, reps = args.cases, args.reps
-    tmp = Path(tempfile.mkdtemp(prefix="evalledger-bench-"))
+    tmp = Path(tempfile.mkdtemp(prefix="astrometron-bench-"))
     try:
         data = tmp / "bench.jsonl"
         data.write_text(
@@ -96,7 +96,7 @@ def main() -> int:
                 for i in range(n)
             )
         )
-        store = Store(tmp / ".evalledger")
+        store = Store(tmp / ".astrometron")
 
         def cfg(**prov: Any) -> Any:
             return from_dict(

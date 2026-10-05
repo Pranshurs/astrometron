@@ -8,7 +8,7 @@ acknowledge within 5 working days.
 
 In scope: anything that lets a receipt, dataset snapshot, comparison, reproduction
 verdict or routing decision misrepresent what happened **without** being detected by
-`evalledger verify` / `selfcheck`; credential leakage; unsafe defaults.
+`astrometron verify` / `selfcheck`; credential leakage; unsafe defaults.
 
 ## Known limits (by design, V1)
 
@@ -22,5 +22,5 @@ See [docs/THREAT_MODEL.md](docs/THREAT_MODEL.md). In particular:
 
 ## Secrets
 
-EvalLedger refuses literal credentials in eval configs and routing policies. Provide keys
+Astrometron refuses literal credentials in eval configs and routing policies. Provide keys
 through environment variables named by `api_key_env`. Keys are never written to receipts.
